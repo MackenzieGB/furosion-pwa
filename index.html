@@ -1,0 +1,2410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#e8c840">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Furosion">
+<link rel="manifest" href="manifest.json">
+<title>Furosion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Unbounded:wght@400;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+
+<style>
+/* =====================================================
+   DESIGN TOKENS — bold yellow editorial theme
+   ===================================================== */
+:root {
+  --yellow:   #e8c840;
+  --yellow2:  #f5d840;
+  --yellow-d: #b8980a;
+  --yellow-bg:#1a1800;
+  --bg:       #0f0e0a;
+  --bg2:      #161410;
+  --bg3:      #1e1b10;
+  --surface:  #201e12;
+  --surface2: #2a2715;
+  --border:   rgba(232,200,64,0.12);
+  --border2:  rgba(232,200,64,0.22);
+  --text:     #f5f0dc;
+  --text2:    #a09878;
+  --text3:    #5a5230;
+  --accent:   #e8c840;
+  --green:    #4ecb71;
+  --red:      #ff4d5e;
+  --blue:     #5ab4ff;
+  --orange:   #ff9240;
+  --font-display: 'Unbounded', sans-serif;
+  --font-body:    'Space Grotesk', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  --radius:   14px;
+  --radius-sm: 8px;
+  --radius-lg: 20px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  height: 100%;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+/* =====================================================
+   SCROLLBARS
+   ===================================================== */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+/* =====================================================
+   APP SHELL
+   ===================================================== */
+#app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* =====================================================
+   OFFLINE SCREEN
+   ===================================================== */
+#offline-screen {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--bg);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  text-align: center;
+  gap: 20px;
+}
+#offline-screen.show { display: flex; }
+.offline-icon {
+  width: 80px; height: 80px;
+  border: 3px solid var(--yellow);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+}
+.offline-title {
+  font-family: var(--font-display);
+  font-size: 24px; font-weight: 900;
+  color: var(--yellow);
+}
+.offline-sub { font-size: 15px; color: var(--text2); line-height: 1.7; max-width: 280px; }
+.offline-contact {
+  margin-top: 8px;
+  font-size: 13px; font-family: var(--font-mono);
+  color: var(--text3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 12px 20px;
+  border-radius: var(--radius);
+}
+
+/* =====================================================
+   TOP BAR
+   ===================================================== */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 50;
+}
+.topbar-logo {
+  display: flex; align-items: center; gap: 10px;
+  cursor: pointer;
+}
+.logo-mark {
+  width: 36px; height: 36px;
+  background: var(--yellow);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.logo-mark img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  padding: 2px;
+}
+.logo-mark-fallback {
+  font-family: var(--font-display);
+  font-size: 16px; font-weight: 900;
+  color: var(--bg);
+  letter-spacing: -1px;
+}
+.logo-wordmark {
+  font-family: var(--font-display);
+  font-size: 18px; font-weight: 900;
+  color: var(--yellow);
+  letter-spacing: -0.5px;
+}
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.event-pill {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--yellow);
+  background: rgba(232,200,64,0.1);
+  border: 1px solid var(--border2);
+  padding: 4px 10px;
+  border-radius: 20px;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =====================================================
+   NAV
+   ===================================================== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(15,14,10,0.96);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-top: 1px solid var(--border);
+  display: flex;
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 4px 8px;
+  cursor: pointer;
+  color: var(--text3);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+  position: relative;
+}
+.nav-btn.active { color: var(--yellow); }
+.nav-btn svg { width: 22px; height: 22px; transition: transform 0.15s; }
+.nav-btn.active svg { transform: scale(1.1); }
+.nav-badge {
+  position: absolute;
+  top: 8px; right: calc(50% - 15px);
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--red);
+  border: 2px solid var(--bg);
+  display: none;
+}
+.nav-badge.show { display: block; }
+
+/* Desktop nav */
+@media (min-width: 768px) {
+  .bottom-nav { display: none; }
+  .desktop-sidebar {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: 220px;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 24px 16px;
+    gap: 4px;
+    z-index: 60;
+  }
+  .desktop-sidebar .topbar-logo {
+    padding: 0 8px 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .side-nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--text2);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .side-nav-btn:hover { background: var(--surface); color: var(--text); }
+  .side-nav-btn.active { background: rgba(232,200,64,0.12); color: var(--yellow); }
+  .side-nav-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .side-badge {
+    margin-left: auto;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--red);
+    display: none;
+  }
+  .side-badge.show { display: block; }
+  #app { padding-left: 220px; }
+  .topbar { display: none; }
+  .screen { padding-bottom: 24px; }
+}
+@media (max-width: 767px) {
+  .desktop-sidebar { display: none; }
+}
+
+/* =====================================================
+   SCREENS
+   ===================================================== */
+.screen {
+  display: none;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 80px;
+}
+.screen.active { display: flex; flex-direction: column; }
+@media (min-width: 768px) {
+  .screen { height: calc(100vh); padding-bottom: 0; }
+}
+
+/* =====================================================
+   BUTTONS
+   ===================================================== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px; padding: 12px 22px; border-radius: var(--radius-sm);
+  font-family: var(--font-body); font-size: 14px; font-weight: 600;
+  cursor: pointer; border: none; transition: all 0.15s;
+  width: 100%; letter-spacing: 0.01em;
+}
+.btn:active { transform: scale(0.97); opacity: 0.85; }
+.btn-yellow { background: var(--yellow); color: var(--bg); }
+.btn-yellow:hover { background: var(--yellow2); }
+.btn-outline { background: transparent; color: var(--yellow); border: 1.5px solid var(--border2); }
+.btn-outline:hover { background: rgba(232,200,64,0.08); }
+.btn-surface { background: var(--surface2); color: var(--text); }
+.btn-surface:hover { background: var(--surface); }
+.btn-danger { background: rgba(255,77,94,0.15); color: var(--red); border: 1px solid rgba(255,77,94,0.3); }
+.btn-danger:hover { background: rgba(255,77,94,0.25); }
+.btn-sm { padding: 8px 14px; font-size: 12px; width: auto; }
+.btn-icon {
+  width: 36px; height: 36px; padding: 0;
+  border-radius: var(--radius-sm);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.15s; width: auto;
+}
+.btn-icon:hover { border-color: var(--border2); }
+.btn-icon svg { width: 15px; height: 15px; }
+
+/* =====================================================
+   CARDS & BENTO
+   ===================================================== */
+.bento {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+}
+.bento-2 { grid-template-columns: 1fr 1fr; }
+.bento-3 { grid-template-columns: repeat(3, 1fr); }
+@media (min-width: 768px) {
+  .bento { padding: 20px 24px; gap: 14px; }
+  .bento-desktop-3 { grid-template-columns: repeat(3, 1fr); }
+  .bento-desktop-4 { grid-template-columns: repeat(4, 1fr); }
+}
+.span-2 { grid-column: span 2; }
+.span-full { grid-column: 1 / -1; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.card:active { border-color: var(--border2); }
+.card-p { padding: 16px; }
+@media (min-width: 768px) {
+  .card-p { padding: 20px; }
+}
+
+.card-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 5px;
+}
+.card-title { font-size: 20px; font-weight: 700; line-height: 1.1; }
+.card-num {
+  font-family: var(--font-display);
+  font-size: 36px; font-weight: 900;
+  color: var(--yellow); line-height: 1;
+}
+.card-sub { font-size: 12px; color: var(--text2); margin-top: 4px; }
+
+/* =====================================================
+   FORMS
+   ===================================================== */
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label {
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.07em;
+  text-transform: uppercase; color: var(--text3);
+}
+.form-input, .form-select, .form-textarea {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 11px 14px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 14px;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.2s;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--yellow);
+  box-shadow: 0 0 0 3px rgba(232,200,64,0.08);
+}
+.form-select { appearance: none; cursor: pointer; }
+.form-textarea { resize: vertical; min-height: 100px; font-family: var(--font-mono); font-size: 12px; }
+
+/* =====================================================
+   STATUS BADGES
+   ===================================================== */
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 20px;
+}
+.badge-yellow { background: rgba(232,200,64,0.15); color: var(--yellow); border: 1px solid rgba(232,200,64,0.3); }
+.badge-green  { background: rgba(78,203,113,0.15); color: var(--green);  border: 1px solid rgba(78,203,113,0.3); }
+.badge-red    { background: rgba(255,77,94,0.15);  color: var(--red);    border: 1px solid rgba(255,77,94,0.3); }
+.badge-blue   { background: rgba(90,180,255,0.15); color: var(--blue);   border: 1px solid rgba(90,180,255,0.3); }
+.badge-orange { background: rgba(255,146,64,0.15); color: var(--orange); border: 1px solid rgba(255,146,64,0.3); }
+.badge-dim    { background: rgba(90,82,48,0.2);    color: var(--text3);  border: 1px solid var(--border); }
+
+.dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block; }
+
+/* =====================================================
+   SECTION TITLE
+   ===================================================== */
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text3);
+  padding: 0 20px 8px;
+}
+@media (min-width: 768px) { .section-label { padding: 0 24px 8px; } }
+
+/* =====================================================
+   TOAST
+   ===================================================== */
+#toast {
+  position: fixed;
+  bottom: 90px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 10px 18px;
+  font-family: var(--font-mono); font-size: 12px;
+  opacity: 0; transition: all 0.25s;
+  z-index: 5000; white-space: nowrap;
+  pointer-events: none; max-width: 90vw;
+  overflow: hidden; text-overflow: ellipsis;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#toast.ok   { color: var(--green); border-color: rgba(78,203,113,0.35); }
+#toast.err  { color: var(--red);   border-color: rgba(255,77,94,0.35); }
+#toast.info { color: var(--blue);  border-color: rgba(90,180,255,0.35); }
+@media (min-width: 768px) { #toast { bottom: 24px; } }
+
+/* =====================================================
+   OVERLAYS — PIN + ADMIN
+   ===================================================== */
+.overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  display: none; flex-direction: column;
+  background: var(--bg);
+  animation: slideUp 0.25s ease;
+}
+.overlay.open { display: flex; }
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* PIN */
+.pin-wrap {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 28px; padding: 32px;
+}
+.pin-heading {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 900;
+  color: var(--yellow);
+}
+.pin-sub { font-size: 13px; color: var(--text2); font-family: var(--font-mono); }
+.pin-dots { display: flex; gap: 14px; }
+.pin-dot {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--surface2);
+  border: 2px solid var(--border2);
+  transition: all 0.15s;
+}
+.pin-dot.on  { background: var(--yellow); border-color: var(--yellow); }
+.pin-dot.err { background: var(--red);    border-color: var(--red); }
+.pin-grid { display: grid; grid-template-columns: repeat(3, 72px); gap: 10px; }
+.pin-key {
+  height: 68px; border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-family: var(--font-display); font-size: 20px; font-weight: 700;
+  color: var(--text);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.1s;
+}
+.pin-key:active { background: var(--surface2); transform: scale(0.94); }
+.pin-key.yellow { color: var(--yellow); }
+
+/* ADMIN */
+.admin-topbar {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--bg2);
+  flex-shrink: 0;
+}
+.admin-title {
+  font-family: var(--font-display);
+  font-size: 16px; font-weight: 900; color: var(--yellow);
+}
+.admin-tabs {
+  display: flex; gap: 4px;
+  overflow-x: auto; scrollbar-width: none;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.admin-tabs::-webkit-scrollbar { display: none; }
+.admin-tab {
+  padding: 7px 14px; border-radius: var(--radius-sm);
+  font-family: var(--font-mono); font-size: 11px;
+  cursor: pointer; white-space: nowrap;
+  color: var(--text2);
+  background: transparent; border: 1px solid transparent;
+  transition: all 0.15s;
+}
+.admin-tab.active { background: rgba(232,200,64,0.12); color: var(--yellow); border-color: var(--border2); }
+.admin-body { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.admin-panel { display: none; flex-direction: column; gap: 12px; }
+.admin-panel.active { display: flex; }
+
+/* =====================================================
+   LIST ITEMS (admin + general)
+   ===================================================== */
+.list-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 13px 15px;
+  display: flex; align-items: center;
+  gap: 12px;
+}
+.list-item-main { flex: 1; min-width: 0; }
+.list-item-title { font-size: 14px; font-weight: 600; }
+.list-item-sub { font-size: 11px; color: var(--text2); font-family: var(--font-mono); margin-top: 3px; }
+.list-item-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+/* =====================================================
+   VERIFY SCREEN
+   ===================================================== */
+.verify-hero {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 40px 28px; gap: 24px; text-align: center;
+}
+.code-box {
+  background: var(--surface);
+  border: 2px solid var(--border2);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  text-align: center; width: 100%; max-width: 320px;
+}
+.code-label {
+  font-family: var(--font-mono); font-size: 10px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text3); margin-bottom: 12px;
+}
+.code-value {
+  font-family: var(--font-display);
+  font-size: 52px; font-weight: 900;
+  color: var(--yellow); letter-spacing: 8px;
+  line-height: 1;
+}
+.code-sub {
+  font-size: 12px; color: var(--text3);
+  font-family: var(--font-mono); margin-top: 10px;
+  letter-spacing: 0.04em;
+}
+.pending-animation {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  color: var(--text2); font-size: 13px; font-family: var(--font-mono);
+}
+.waiting-dots span {
+  display: inline-block; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--yellow); margin: 0 2px;
+  animation: blink 1.4s infinite;
+}
+.waiting-dots span:nth-child(2) { animation-delay: 0.2s; }
+.waiting-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink { 0%,80%,100% { opacity:0.2; } 40% { opacity:1; } }
+
+.verified-hero-card {
+  background: linear-gradient(135deg, rgba(78,203,113,0.12), rgba(78,203,113,0.05));
+  border: 1.5px solid rgba(78,203,113,0.35);
+  border-radius: var(--radius-lg);
+  padding: 28px; width: 100%; max-width: 320px;
+  text-align: center;
+}
+.verified-check {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: rgba(78,203,113,0.15);
+  border: 2px solid rgba(78,203,113,0.4);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 14px;
+  font-size: 22px;
+}
+.verified-role-text {
+  font-family: var(--font-display);
+  font-size: 28px; font-weight: 900;
+  color: var(--green); letter-spacing: -0.5px;
+}
+
+/* =====================================================
+   VOTE SCREEN
+   ===================================================== */
+.competition-block {
+  padding: 0 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+@media (min-width: 768px) { .competition-block { padding: 0 24px 24px; } }
+.competition-block:last-child { border-bottom: none; }
+
+.comp-header {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 12px;
+  padding: 20px 0 14px;
+}
+.comp-cat {
+  font-family: var(--font-mono); font-size: 9px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--yellow); margin-bottom: 3px;
+}
+.comp-name { font-size: 20px; font-weight: 700; }
+
+.candidate-list { display: flex; flex-direction: column; gap: 8px; }
+.candidate-row {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 15px;
+  display: flex; align-items: center;
+  gap: 12px; cursor: pointer;
+  transition: all 0.2s;
+}
+.candidate-row:hover { border-color: var(--border2); }
+.candidate-row.my-vote {
+  background: rgba(232,200,64,0.08);
+  border-color: rgba(232,200,64,0.35);
+}
+.candidate-row.winner-row {
+  background: rgba(78,203,113,0.08);
+  border-color: rgba(78,203,113,0.35);
+}
+.candidate-info { flex: 1; min-width: 0; }
+.candidate-name { font-size: 15px; font-weight: 600; }
+.candidate-desc { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.candidate-bar-wrap { height: 3px; background: var(--surface2); border-radius: 2px; margin-top: 8px; }
+.candidate-bar { height: 3px; border-radius: 2px; background: var(--yellow); transition: width 0.6s cubic-bezier(.4,0,.2,1); }
+.winner-bar { background: var(--green); }
+.vote-pct { font-family: var(--font-mono); font-size: 16px; font-weight: 500; color: var(--yellow); min-width: 40px; text-align: right; }
+.vote-check {
+  width: 34px; height: 34px; flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.vote-check.checked { background: var(--yellow); border-color: var(--yellow); }
+.vote-check.checked svg { stroke: var(--bg); }
+.vote-check svg { width: 16px; height: 16px; }
+
+/* =====================================================
+   INFO PAGES
+   ===================================================== */
+.info-list { display: flex; flex-direction: column; gap: 8px; padding: 16px; }
+@media (min-width: 768px) { .info-list { padding: 20px 24px; } }
+
+.info-page-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex; align-items: center; gap: 14px;
+  cursor: pointer; transition: all 0.15s;
+}
+.info-page-item:hover { border-color: var(--border2); }
+.info-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: rgba(232,200,64,0.1);
+  border: 1px solid rgba(232,200,64,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.info-arrow { color: var(--text3); flex-shrink: 0; }
+.info-arrow svg { width: 16px; height: 16px; }
+
+.content-view { display: none; flex-direction: column; padding: 16px; }
+.content-view.show { display: flex; }
+@media (min-width: 768px) { .content-view { padding: 20px 24px; } }
+.back-btn {
+  display: flex; align-items: center; gap: 8px;
+  color: var(--yellow); font-size: 13px; cursor: pointer;
+  margin-bottom: 20px; font-weight: 500;
+}
+.back-btn:hover { opacity: 0.8; }
+.back-btn svg { width: 16px; height: 16px; }
+
+.md-body { line-height: 1.75; color: var(--text); }
+.md-body h1 { font-family: var(--font-display); font-size: 26px; font-weight: 900; color: var(--yellow); margin-bottom: 16px; letter-spacing: -0.5px; }
+.md-body h2 { font-size: 18px; font-weight: 700; margin: 20px 0 8px; }
+.md-body h3 { font-size: 15px; font-weight: 600; margin: 14px 0 6px; color: var(--text2); }
+.md-body p  { font-size: 14px; margin-bottom: 10px; }
+.md-body ul, .md-body ol { padding-left: 20px; margin-bottom: 10px; }
+.md-body li { font-size: 14px; margin-bottom: 4px; }
+.md-body strong { font-weight: 700; color: var(--yellow); }
+.md-body em { color: var(--text2); font-style: italic; }
+.md-body code { font-family: var(--font-mono); font-size: 12px; background: var(--surface2); padding: 2px 6px; border-radius: 4px; color: var(--orange); }
+.md-body hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+.md-body blockquote { border-left: 3px solid var(--yellow); padding-left: 14px; color: var(--text2); margin: 10px 0; font-style: italic; }
+.md-body a { color: var(--yellow); text-decoration: underline; text-underline-offset: 3px; }
+.md-body table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+.md-body th { background: var(--surface2); padding: 8px 12px; text-align: left; font-weight: 600; border: 1px solid var(--border); }
+.md-body td { padding: 8px 12px; border: 1px solid var(--border); }
+
+/* =====================================================
+   SCHEDULE
+   ===================================================== */
+.schedule-list { display: flex; flex-direction: column; padding: 16px; gap: 0; }
+@media (min-width: 768px) { .schedule-list { padding: 20px 24px; } }
+.schedule-item {
+  display: flex; gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.schedule-item:last-child { border-bottom: none; }
+.sched-time {
+  font-family: var(--font-mono); font-size: 12px;
+  color: var(--text3); min-width: 52px; margin-top: 2px;
+}
+.sched-line {
+  display: flex; flex-direction: column; align-items: center;
+  flex-shrink: 0; width: 20px;
+}
+.sched-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  border: 2px solid var(--border2); background: var(--bg);
+  flex-shrink: 0; margin-top: 4px;
+  transition: all 0.3s;
+}
+.sched-dot.now { background: var(--yellow); border-color: var(--yellow); box-shadow: 0 0 8px rgba(232,200,64,0.5); }
+.sched-dot.past { background: var(--surface2); border-color: var(--border); }
+.sched-connector {
+  flex: 1; width: 1px; background: var(--border); margin-top: 4px;
+}
+.sched-content { flex: 1; min-width: 0; }
+.sched-title { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+.sched-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
+.sched-location { font-size: 11px; font-family: var(--font-mono); color: var(--text3); margin-top: 4px; }
+
+/* =====================================================
+   STAFF LOCATOR
+   ===================================================== */
+.staff-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  padding: 16px;
+}
+@media (min-width: 768px) { .staff-grid { grid-template-columns: repeat(3, 1fr); padding: 20px 24px; } }
+.staff-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 15px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.staff-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 16px; font-weight: 900;
+  flex-shrink: 0;
+}
+.staff-name { font-size: 14px; font-weight: 600; }
+.staff-role { font-size: 11px; color: var(--text2); font-family: var(--font-mono); }
+.staff-location { font-size: 11px; color: var(--text3); font-family: var(--font-mono); margin-top: 2px; }
+.staff-online { display: flex; align-items: center; gap: 5px; font-size: 10px; font-family: var(--font-mono); color: var(--green); margin-top: 4px; }
+.staff-online span { width: 6px; height: 6px; border-radius: 50%; background: var(--green); display: inline-block; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
+
+/* =====================================================
+   LOST & FOUND
+   ===================================================== */
+.lf-grid { display: flex; flex-direction: column; gap: 10px; padding: 16px; }
+@media (min-width: 768px) { .lf-grid { padding: 20px 24px; } }
+.lf-item {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 15px;
+  display: flex; align-items: flex-start; gap: 14px;
+}
+.lf-emoji { font-size: 28px; flex-shrink: 0; margin-top: 2px; }
+.lf-info { flex: 1; }
+.lf-title { font-size: 15px; font-weight: 600; }
+.lf-desc { font-size: 12px; color: var(--text2); margin-top: 3px; line-height: 1.5; }
+.lf-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+.lf-time { font-size: 10px; font-family: var(--font-mono); color: var(--text3); }
+.lf-status-claimed { font-size: 10px; font-family: var(--font-mono); color: var(--green); }
+
+/* =====================================================
+   COMPETITORS
+   ===================================================== */
+.competitor-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 16px;
+}
+@media (min-width: 768px) { .competitor-grid { grid-template-columns: repeat(3,1fr); padding: 20px 24px; } }
+.competitor-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+  cursor: pointer; transition: border-color 0.15s;
+}
+.competitor-card:hover { border-color: var(--border2); }
+.competitor-banner {
+  height: 60px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 28px; font-weight: 900;
+}
+.competitor-body { padding: 12px; }
+.competitor-name { font-size: 14px; font-weight: 700; }
+.competitor-cat { font-size: 10px; font-family: var(--font-mono); color: var(--text3); margin-top: 2px; }
+.competitor-bio { font-size: 12px; color: var(--text2); margin-top: 6px; line-height: 1.5; }
+
+/* competitor detail */
+.competitor-detail { display: none; flex-direction: column; padding: 16px; gap: 16px; }
+.competitor-detail.show { display: flex; }
+.competitor-detail-banner {
+  height: 120px; border-radius: var(--radius); margin-bottom: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 56px; font-weight: 900;
+}
+@media (min-width: 768px) { .competitor-detail { padding: 20px 24px; } }
+
+/* =====================================================
+   HOME
+   ===================================================== */
+.home-hero {
+  padding: 20px 20px 8px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+@media (min-width: 768px) { .home-hero { padding: 24px 24px 12px; } }
+.home-greeting { font-size: 12px; font-family: var(--font-mono); color: var(--text3); letter-spacing: 0.06em; }
+.home-name { font-family: var(--font-display); font-size: 28px; font-weight: 900; letter-spacing: -0.5px; }
+.home-sub { font-size: 13px; color: var(--text2); margin-top: 2px; }
+
+.announcement-bar {
+  margin: 4px 16px 0;
+  background: rgba(232,200,64,0.08);
+  border: 1px solid rgba(232,200,64,0.25);
+  border-radius: var(--radius);
+  padding: 12px 15px;
+  display: flex; align-items: flex-start; gap: 10px;
+}
+@media (min-width: 768px) { .announcement-bar { margin: 4px 24px 0; } }
+.ann-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.ann-text { font-size: 13px; line-height: 1.6; }
+
+/* =====================================================
+   EMPTY STATE
+   ===================================================== */
+.empty { text-align: center; padding: 48px 24px; color: var(--text3); }
+.empty svg { margin: 0 auto 12px; display: block; opacity: 0.3; }
+.empty-text { font-family: var(--font-mono); font-size: 13px; }
+.empty-sub { font-size: 12px; margin-top: 6px; }
+
+/* =====================================================
+   NOTIFICATIONS PERMISSION BANNER
+   ===================================================== */
+.notif-banner {
+  margin: 0 16px;
+  background: rgba(90,180,255,0.08);
+  border: 1px solid rgba(90,180,255,0.25);
+  border-radius: var(--radius);
+  padding: 12px 15px;
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer;
+}
+.notif-banner-text { flex: 1; font-size: 12px; color: var(--text2); line-height: 1.5; }
+.notif-banner-btn {
+  font-size: 11px; font-family: var(--font-mono);
+  color: var(--blue); white-space: nowrap; font-weight: 500;
+}
+
+/* =====================================================
+   DIVIDER
+   ===================================================== */
+.divider { height: 1px; background: var(--border); }
+
+/* =====================================================
+   UTIL
+   ===================================================== */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.gap-8 { gap: 8px; }
+.gap-12 { gap: 12px; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.mt-4 { margin-top: 4px; }
+.mt-8 { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }
+.mb-4 { margin-bottom: 4px; }
+.text-sm { font-size: 13px; }
+.text-xs { font-size: 11px; font-family: var(--font-mono); color: var(--text3); }
+.font-bold { font-weight: 700; }
+.text-yellow { color: var(--yellow); }
+.text-muted { color: var(--text2); }
+.w-full { width: 100%; }
+
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)} }
+.fade-in { animation: fadeIn 0.25s ease forwards; }
+</style>
+</head>
+<body>
+
+<!-- ========== OFFLINE SCREEN ========== -->
+<div id="offline-screen">
+  <div class="offline-icon">⚡</div>
+  <div class="offline-title">You're offline</div>
+  <div class="offline-sub">Something went wrong or your device lost connection. Some features may not be available right now.</div>
+  <div class="offline-contact">
+    Need help? Find a staff member<br>or email support@furosion.com
+  </div>
+  <button class="btn btn-outline" style="max-width:220px;margin-top:8px" onclick="retryOnline()">Try again</button>
+</div>
+
+<!-- ========== PIN OVERLAY ========== -->
+<div class="overlay" id="pin-overlay">
+  <div class="pin-wrap">
+    <div style="text-align:center">
+      <div class="pin-heading">Staff Access</div>
+      <div class="pin-sub" id="pin-hint">Hold 4 fingers · or 5× logo tap</div>
+    </div>
+    <div class="pin-dots">
+      <div class="pin-dot" id="pd0"></div>
+      <div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div>
+      <div class="pin-dot" id="pd3"></div>
+    </div>
+    <div class="pin-grid">
+      <div class="pin-key" onclick="pinKey('1')">1</div>
+      <div class="pin-key" onclick="pinKey('2')">2</div>
+      <div class="pin-key" onclick="pinKey('3')">3</div>
+      <div class="pin-key" onclick="pinKey('4')">4</div>
+      <div class="pin-key" onclick="pinKey('5')">5</div>
+      <div class="pin-key" onclick="pinKey('6')">6</div>
+      <div class="pin-key" onclick="pinKey('7')">7</div>
+      <div class="pin-key" onclick="pinKey('8')">8</div>
+      <div class="pin-key" onclick="pinKey('9')">9</div>
+      <div class="pin-key yellow" onclick="pinCancel()" style="font-size:13px">Cancel</div>
+      <div class="pin-key" onclick="pinKey('0')">0</div>
+      <div class="pin-key yellow" onclick="pinDel()">⌫</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== ADMIN OVERLAY ========== -->
+<div class="overlay" id="admin-overlay">
+  <div class="admin-topbar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="logo-mark" style="width:28px;height:28px;border-radius:7px">
+        <img src="https://furosion.com/logo.png" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt="F">
+        <span class="logo-mark-fallback" style="display:none">F</span>
+      </div>
+      <div class="admin-title">Admin Panel</div>
+    </div>
+    <button class="btn-icon" onclick="closeAdmin()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="admin-tabs">
+    <div class="admin-tab active" data-tab="event" onclick="adminTab(this,'event')">Event</div>
+    <div class="admin-tab" data-tab="devices" onclick="adminTab(this,'devices')">Devices</div>
+    <div class="admin-tab" data-tab="comps" onclick="adminTab(this,'comps')">Competitions</div>
+    <div class="admin-tab" data-tab="voting" onclick="adminTab(this,'voting')">Voting</div>
+    <div class="admin-tab" data-tab="pages" onclick="adminTab(this,'pages')">Pages</div>
+    <div class="admin-tab" data-tab="schedule" onclick="adminTab(this,'schedule')">Schedule</div>
+    <div class="admin-tab" data-tab="staff-adm" onclick="adminTab(this,'staff-adm')">Staff</div>
+    <div class="admin-tab" data-tab="lf-adm" onclick="adminTab(this,'lf-adm')">Lost & Found</div>
+    <div class="admin-tab" data-tab="notifs" onclick="adminTab(this,'notifs')">Notify</div>
+  </div>
+  <div class="admin-body" id="admin-body">
+
+    <!-- EVENT TAB -->
+    <div class="admin-panel active" id="adm-event">
+      <div class="flex flex-col gap-8">
+        <div class="form-group"><div class="form-label">Event Name</div><input class="form-input" id="adm-event-name" placeholder="Furosion Spring 2025"></div>
+        <div class="form-group"><div class="form-label">Live Announcement</div><textarea class="form-input form-textarea" id="adm-announcement" placeholder="Message shown to all attendees on home screen..." style="min-height:80px;font-family:var(--font-body);font-size:14px"></textarea></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div class="form-group"><div class="form-label">Session Duration (days)</div><input class="form-input" type="number" id="adm-days" value="3" min="1" max="30"></div>
+          <div class="form-group"><div class="form-label">Admin PIN</div><input class="form-input" type="password" id="adm-pin-input" placeholder="4 digits"></div>
+        </div>
+        <button class="btn btn-yellow" onclick="saveEvent()">Save Event Config</button>
+        <div class="divider"></div>
+        <button class="btn btn-danger" onclick="resetAll()">Reset All Event Data</button>
+      </div>
+    </div>
+
+    <!-- DEVICES TAB -->
+    <div class="admin-panel" id="adm-devices">
+      <div class="text-xs" style="padding:4px 0 8px">Pending codes waiting for staff verification:</div>
+      <div id="adm-pending-list" style="display:flex;flex-direction:column;gap:8px"></div>
+      <div class="divider" style="margin:8px 0"></div>
+      <div class="text-xs" style="padding:4px 0 8px">Verified devices:</div>
+      <div id="adm-device-list" style="display:flex;flex-direction:column;gap:8px"></div>
+      <!-- Demo verify strip -->
+      <div style="margin-top:12px;padding:12px;background:var(--surface);border:1px dashed var(--border2);border-radius:var(--radius)">
+        <div class="text-xs" style="margin-bottom:8px">DEMO — tap to verify this device as:</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-sm btn-surface" onclick="demoVerify('voter')">Voter</button>
+          <button class="btn btn-sm btn-surface" onclick="demoVerify('competitor')">Competitor</button>
+          <button class="btn btn-sm btn-surface" onclick="demoVerify('staff')">Staff</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPETITIONS TAB -->
+    <div class="admin-panel" id="adm-comps">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:15px;display:flex;flex-direction:column;gap:10px">
+        <div class="form-label">Add Competition</div>
+        <div class="form-group"><input class="form-input" id="adm-comp-name" placeholder="Competition name e.g. Best Fursuit"></div>
+        <div class="form-group"><div class="form-label">Category Label</div><input class="form-input" id="adm-comp-cat" placeholder="e.g. Costumes"></div>
+        <button class="btn btn-yellow btn-sm" onclick="addComp()" style="width:auto">Add Competition</button>
+      </div>
+      <div id="adm-comp-list" style="display:flex;flex-direction:column;gap:8px"></div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:15px;display:flex;flex-direction:column;gap:10px">
+        <div class="form-label">Add Candidate</div>
+        <div class="form-group"><div class="form-label">To Competition</div><select class="form-select" id="adm-cand-comp"></select></div>
+        <div class="form-group"><input class="form-input" id="adm-cand-name" placeholder="Name / nickname"></div>
+        <div class="form-group"><input class="form-input" id="adm-cand-desc" placeholder="Short description (optional)"></div>
+        <button class="btn btn-outline btn-sm" onclick="addCand()" style="width:auto">Add Candidate</button>
+      </div>
+    </div>
+
+    <!-- VOTING TAB -->
+    <div class="admin-panel" id="adm-voting">
+      <div class="text-xs" style="padding:4px 0 8px">Open, close, or reveal results for each competition:</div>
+      <div id="adm-voting-list" style="display:flex;flex-direction:column;gap:10px"></div>
+    </div>
+
+    <!-- PAGES TAB -->
+    <div class="admin-panel" id="adm-pages">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:15px;display:flex;flex-direction:column;gap:10px">
+        <div class="form-label" id="page-form-mode-label">Add New Page</div>
+        <div class="form-group"><input class="form-input" id="adm-page-title" placeholder="Page title e.g. Event Rules"></div>
+        <div style="display:grid;grid-template-columns:60px 1fr;gap:8px">
+          <div class="form-group"><div class="form-label">Icon</div><input class="form-input" id="adm-page-icon" placeholder="📋" style="text-align:center;font-size:20px"></div>
+          <div class="form-group"><div class="form-label">Icon Colour (bg hex)</div><input class="form-input" id="adm-page-color" placeholder="#1a1800" value="#1a1800"></div>
+        </div>
+        <div class="form-group"><div class="form-label">Content (Markdown supported)</div><textarea class="form-textarea form-input" id="adm-page-content" placeholder="# My Page&#10;&#10;Write your content here..." style="min-height:200px"></textarea></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-yellow" onclick="savePage()">Save Page</button>
+          <button class="btn btn-surface btn-sm" onclick="clearPageForm()" style="flex:0 0 auto">Clear</button>
+        </div>
+      </div>
+      <div id="adm-pages-list" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+
+    <!-- SCHEDULE TAB -->
+    <div class="admin-panel" id="adm-schedule">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:15px;display:flex;flex-direction:column;gap:10px">
+        <div class="form-label">Add Schedule Item</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div class="form-group"><div class="form-label">Time</div><input class="form-input" id="adm-sched-time" placeholder="14:30" type="time"></div>
+          <div class="form-group"><div class="form-label">Date</div><input class="form-input" id="adm-sched-date" type="date"></div>
+        </div>
+        <div class="form-group"><input class="form-input" id="adm-sched-title" placeholder="Event title"></div>
+        <div class="form-group"><textarea class="form-input form-textarea" id="adm-sched-desc" placeholder="Description (optional)" style="min-height:60px;font-family:var(--font-body);font-size:14px"></textarea></div>
+        <div class="form-group"><div class="form-label">Location</div><input class="form-input" id="adm-sched-loc" placeholder="e.g. Main Hall"></div>
+        <button class="btn btn-yellow btn-sm" onclick="addSchedItem()" style="width:auto">Add Item</button>
+      </div>
+      <div id="adm-sched-list" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+
+    <!-- STAFF TAB -->
+    <div class="admin-panel" id="adm-staff-adm">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:15px;display:flex;flex-direction:column;gap:10px">
+        <div class="form-label">Add Staff Member</div>
+        <div class="form-group"><input class="form-input" id="adm-staff-name" placeholder="Display name / fursona name"></div>
+        <div class="form-group"><div class="form-label">Role</div><input class="form-input" id="adm-staff-role" placeholder="e.g. Lead Organiser, Security, Tech Support"></div>
+        <div class="form-group"><div class="form-label">Location / Area</div><input class="form-input" id="adm-staff-loc" placeholder="e.g. Registration Desk"></div>
+        <div style="display:grid;grid-template-columns:60px 1fr;gap:8px">
+          <div class="form-group"><div class="form-label">Avatar</div><input class="form-input" id="adm-staff-avatar" placeholder="🐺" style="text-align:center;font-size:20px"></div>
+          <div class="form-group"><div class="form-label">Avatar bg color</div><input class="form-input" id="adm-staff-color" type="color" value="#1a1800" style="height:44px;padding:4px 8px;cursor:pointer"></div>
+        </div>
+        <div class="form-group"><div class="form-label">Status</div>
+          <select class="form-select" id="adm-staff-status">
+            <option value="online">On shift</option>
+            <option value="break">On break</option>
+            <option value="offline">Off duty</option>
+          </select>
+        </div>
+        <button class="btn btn-yellow btn-sm" onclick="addStaff()" style="width:auto">Add Staff Member</button>
+      </div>
+      <div id="adm-staff-list" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+
+    <!-- LOST & FOUND TAB -->
+    <div class="admin-panel" id="adm-lf-adm">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:15px;display:flex;flex-direction:column;gap:10px">
+        <div class="form-label">Report Found Item</div>
+        <div style="display:grid;grid-template-columns:60px 1fr;gap:8px">
+          <div class="form-group"><div class="form-label">Emoji</div><input class="form-input" id="adm-lf-emoji" placeholder="🎒" style="text-align:center;font-size:20px"></div>
+          <div class="form-group"><div class="form-label">Item Name</div><input class="form-input" id="adm-lf-title" placeholder="e.g. Blue backpack"></div>
+        </div>
+        <div class="form-group"><textarea class="form-input form-textarea" id="adm-lf-desc" placeholder="Description, where found, identifying features..." style="min-height:70px;font-family:var(--font-body);font-size:14px"></textarea></div>
+        <button class="btn btn-yellow btn-sm" onclick="addLFItem()" style="width:auto">Add Item</button>
+      </div>
+      <div id="adm-lf-list" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+
+    <!-- NOTIFICATIONS TAB -->
+    <div class="admin-panel" id="adm-notifs">
+      <div class="text-xs" style="padding:4px 0 8px">Send a local notification to this device for testing:</div>
+      <div class="form-group"><div class="form-label">Title</div><input class="form-input" id="notif-title" placeholder="Furosion Announcement" value="Furosion"></div>
+      <div class="form-group"><div class="form-label">Message</div><textarea class="form-input form-textarea" id="notif-body" placeholder="Voting is now open for Best Fursuit!" style="min-height:80px;font-family:var(--font-body);font-size:14px"></textarea></div>
+      <button class="btn btn-yellow" onclick="sendTestNotif()">Send Test Notification</button>
+      <div class="divider"></div>
+      <div class="text-xs" style="color:var(--text2);line-height:1.7">For production push notifications, integrate your backend with the Web Push API and store the push subscription returned by <code style="font-size:10px;background:var(--surface2);padding:2px 5px;border-radius:4px">pushManager.subscribe()</code>. The service worker in sw.js handles incoming push events.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========== APP ========== -->
+<div id="app">
+
+  <!-- Desktop Sidebar -->
+  <nav class="desktop-sidebar" id="desktop-sidebar">
+    <div class="topbar-logo" onclick="logoTap()">
+      <div class="logo-mark">
+        <img src="https://furosion.com/logo.png" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt="">
+        <span class="logo-mark-fallback">F</span>
+      </div>
+      <div class="logo-wordmark">Furosion</div>
+    </div>
+    <div class="side-nav-btn active" id="snav-home" onclick="switchScreen('home');sideNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </div>
+    <div class="side-nav-btn" id="snav-vote" onclick="switchScreen('vote');sideNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      Vote
+      <div class="side-badge" id="side-badge-vote"></div>
+    </div>
+    <div class="side-nav-btn" id="snav-verify" onclick="switchScreen('verify');sideNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Verify Device
+    </div>
+    <div class="side-nav-btn" id="snav-info" onclick="switchScreen('info');sideNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Info Pages
+    </div>
+    <div class="side-nav-btn" id="snav-schedule" onclick="switchScreen('schedule');sideNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Schedule
+    </div>
+    <div class="side-nav-btn" id="snav-staff" onclick="switchScreen('staff');sideNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      Staff
+    </div>
+    <div class="side-nav-btn" id="snav-competitors" onclick="switchScreen('competitors');sideNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      Competitors
+    </div>
+    <div class="side-nav-btn" id="snav-lostfound" onclick="switchScreen('lostfound');sideNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Lost & Found
+    </div>
+    <div style="margin-top:auto;padding-top:12px;border-top:1px solid var(--border)">
+      <div class="side-nav-btn" onclick="openPinScreen()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        Admin Panel
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Topbar -->
+  <div class="topbar">
+    <div class="topbar-logo" id="logo-tap-target" onclick="logoTap()">
+      <div class="logo-mark">
+        <img src="https://furosion.com/logo.png" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt="">
+        <span class="logo-mark-fallback">F</span>
+      </div>
+      <div class="logo-wordmark">Furosion</div>
+    </div>
+    <div class="topbar-right">
+      <div class="event-pill" id="event-pill">Loading...</div>
+    </div>
+  </div>
+
+  <!-- ======= HOME ======= -->
+  <div class="screen active" id="screen-home">
+    <div class="home-hero">
+      <div class="home-greeting" id="home-greeting">Welcome to</div>
+      <div class="home-name" id="home-event-name">Furosion</div>
+      <div class="home-sub" id="home-sub">Show your code at the entrance to get verified</div>
+    </div>
+
+    <div id="announcement-zone" style="padding:8px 16px 0"></div>
+
+    <div id="notif-request-banner" style="display:none;padding:10px 16px 0">
+      <div class="notif-banner" onclick="requestNotifs()">
+        <div style="font-size:22px">🔔</div>
+        <div class="notif-banner-text">Enable notifications to get alerts when voting opens, results drop, and announcements go out.</div>
+        <div class="notif-banner-btn">Enable →</div>
+      </div>
+    </div>
+
+    <div class="bento bento-2 bento-desktop-3" style="padding-top:14px">
+      <div class="card card-p">
+        <div class="card-label">Your Role</div>
+        <div class="card-title" id="home-role" style="margin-top:4px">—</div>
+      </div>
+      <div class="card card-p">
+        <div class="card-label">Session</div>
+        <div id="home-session" style="font-size:13px;margin-top:4px;font-family:var(--font-mono);color:var(--text2)">Not verified</div>
+      </div>
+      <div class="card card-p span-2 bento-desktop-3" id="open-comps-card" style="cursor:pointer" onclick="switchScreen('vote');sideNav(document.getElementById('snav-vote'))">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div class="card-label">Open Competitions</div>
+            <div class="card-num" id="home-open-count">0</div>
+            <div class="card-sub" id="home-vote-sub">Check back soon</div>
+          </div>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="1.5"><path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label" style="padding-top:4px">My Votes</div>
+    <div id="home-my-votes" style="padding:0 16px 16px;display:flex;flex-direction:column;gap:8px"></div>
+  </div>
+
+  <!-- ======= VERIFY ======= -->
+  <div class="screen" id="screen-verify">
+    <div id="verify-unverified" class="verify-hero">
+      <div>
+        <div style="font-family:var(--font-display);font-size:26px;font-weight:900;color:var(--yellow);text-align:center;margin-bottom:6px">Your Entry Code</div>
+        <div style="font-size:13px;color:var(--text2);text-align:center;line-height:1.6">Show this code to a staff member to verify your device for this event.</div>
+      </div>
+      <div class="code-box fade-in">
+        <div class="code-label">Device Entry Code</div>
+        <div class="code-value" id="my-code">——</div>
+        <div class="code-sub" id="my-code-id">Device ID: loading...</div>
+      </div>
+      <div class="pending-animation" id="verify-pending" style="display:none">
+        <div class="waiting-dots"><span></span><span></span><span></span></div>
+        <span>Waiting for staff to verify...</span>
+      </div>
+      <div style="font-size:12px;color:var(--text3);font-family:var(--font-mono);text-align:center;max-width:260px;line-height:1.7">Your code is unique to this device. Once a staff member enters it on their device, you'll be automatically let in.</div>
+    </div>
+    <div id="verify-verified" class="verify-hero" style="display:none">
+      <div class="verified-hero-card fade-in">
+        <div class="verified-check">✓</div>
+        <div class="verified-role-text" id="verified-role">Voter</div>
+        <div style="font-size:12px;color:var(--text2);font-family:var(--font-mono);margin-top:8px">Verified for this event</div>
+        <div style="font-size:11px;color:var(--text3);font-family:var(--font-mono);margin-top:6px" id="verified-id">ID: —</div>
+        <div style="font-size:11px;color:var(--text3);font-family:var(--font-mono);margin-top:3px" id="verified-expiry">Expires: —</div>
+      </div>
+      <div style="font-size:13px;color:var(--text2);text-align:center;line-height:1.7;max-width:280px">Your device is verified for this event. You can vote in open competitions and access all features.</div>
+    </div>
+  </div>
+
+  <!-- ======= VOTE ======= -->
+  <div class="screen" id="screen-vote">
+    <div id="vote-content"></div>
+  </div>
+
+  <!-- ======= INFO ======= -->
+  <div class="screen" id="screen-info">
+    <div id="info-page-list"></div>
+    <div class="content-view" id="info-content-view">
+      <div class="back-btn" onclick="backToInfoList()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M5 12l7-7M5 12l7 7"/></svg>
+        All Pages
+      </div>
+      <div class="md-body" id="info-content-body"></div>
+    </div>
+  </div>
+
+  <!-- ======= SCHEDULE ======= -->
+  <div class="screen" id="screen-schedule">
+    <div style="padding:16px 20px 8px;display:flex;align-items:center;justify-content:space-between">
+      <div style="font-family:var(--font-display);font-size:20px;font-weight:900">Schedule</div>
+    </div>
+    <div id="schedule-content"></div>
+  </div>
+
+  <!-- ======= STAFF ======= -->
+  <div class="screen" id="screen-staff">
+    <div style="padding:16px 20px 8px">
+      <div style="font-family:var(--font-display);font-size:20px;font-weight:900">Staff On-Site</div>
+      <div style="font-size:12px;color:var(--text2);font-family:var(--font-mono);margin-top:4px">Find who to talk to and where they are</div>
+    </div>
+    <div id="staff-content"></div>
+  </div>
+
+  <!-- ======= COMPETITORS ======= -->
+  <div class="screen" id="screen-competitors">
+    <div style="padding:16px 20px 8px">
+      <div style="font-family:var(--font-display);font-size:20px;font-weight:900">Competitors</div>
+    </div>
+    <div id="competitors-content"></div>
+    <div class="competitor-detail" id="competitor-detail">
+      <div class="back-btn" onclick="backToCompetitorList()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M5 12l7-7M5 12l7 7"/></svg>
+        All Competitors
+      </div>
+      <div id="competitor-detail-body"></div>
+    </div>
+  </div>
+
+  <!-- ======= LOST & FOUND ======= -->
+  <div class="screen" id="screen-lostfound">
+    <div style="padding:16px 20px 8px">
+      <div style="font-family:var(--font-display);font-size:20px;font-weight:900">Lost &amp; Found</div>
+      <div style="font-size:12px;color:var(--text2);font-family:var(--font-mono);margin-top:4px">Items reported by staff — ask at Registration to claim</div>
+    </div>
+    <div id="lf-content"></div>
+  </div>
+
+  <!-- Mobile Bottom Nav -->
+  <nav class="bottom-nav">
+    <div class="nav-btn active" id="bnav-home" onclick="switchScreen('home');mobileNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </div>
+    <div class="nav-btn" id="bnav-vote" onclick="switchScreen('vote');mobileNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      Vote
+      <div class="nav-badge" id="vote-badge"></div>
+    </div>
+    <div class="nav-btn" id="bnav-verify" onclick="switchScreen('verify');mobileNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Verify
+    </div>
+    <div class="nav-btn" id="bnav-info" onclick="switchScreen('info');mobileNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Info
+    </div>
+    <div class="nav-btn" id="bnav-more" onclick="cycleMore()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+      More
+    </div>
+  </nav>
+
+  <div id="toast"></div>
+</div>
+
+<script>
+// ==========================================================
+// DATA & STATE
+// ==========================================================
+const KEY = 'furosion_v2';
+
+function ls(k, v) {
+  if (v === undefined) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }
+  localStorage.setItem(k, JSON.stringify(v));
+}
+
+const DEFAULTS = {
+  deviceId: null,
+  session: null,
+  votes: {},
+  event: { name: 'Furosion', announcement: '', days: 3, pin: '4242' },
+  competitions: [],
+  pages: [],
+  schedule: [],
+  staff: [],
+  lostFound: [],
+  competitors: [],
+  pendingCodes: []
+};
+
+let S = ls(KEY) || {};
+S = Object.assign({}, DEFAULTS, S);
+if (!S.deviceId) S.deviceId = 'DEV_' + Math.random().toString(36).slice(2,9).toUpperCase();
+if (!S.pages || S.pages.length === 0) S.pages = defaultPages();
+save();
+
+function save() { ls(KEY, S); }
+
+function defaultPages() {
+  return [
+    { id: pid(), title: 'Event Rules', icon: '📋', color: '#1a1800', content: `# Event Rules\n\nWelcome to **Furosion**! Please read these rules before the event.\n\n## Conduct\n\n- Be **respectful** to all attendees, staff, and competitors\n- Discrimination of any kind is not tolerated\n- Keep the venue tidy\n\n## Voting\n\n- One vote per category per verified device\n- Votes are final once submitted\n- Attempts to cheat will result in disqualification\n\n## Photography\n\n- Always ask permission before photographing other attendees\n- Respect any no-photo requests immediately\n\n---\n\n*Questions? Find any staff member wearing a lanyard!*` },
+    { id: pid(), title: 'Prizes', icon: '🏆', color: '#1a1200', content: `# Prizes\n\n## Competition Winners\n\n- **1st Place** — Trophy + special certificate\n- **2nd Place** — Certificate of achievement\n- **3rd Place** — Honourable mention\n\n## Raffle\n\nA raffle will be held at the end of the event. All verified attendees are automatically entered!\n\n---\n\n*Prize details may vary per event. Ask staff for current info.*` },
+    { id: pid(), title: 'Need Help?', icon: '🆘', color: '#1a0a0a', content: `# Need Help?\n\n## I feel unsafe\n\nFind the nearest staff member — they wear **lanyards**. Or go directly to the registration desk.\n\n## I lost something\n\nReport it to any staff member. We keep a **Lost & Found** at Registration.\n\n## I'm overwhelmed\n\nA quiet space is available. Ask any staff — no explanation needed, ever.\n\n## Medical emergency\n\nCall **112** (Slovakia) first, then notify staff immediately.\n\n## Voting / tech issues\n\nLook for a staff member with a **yellow** lanyard.\n\n---\n\n**You are always safe to approach our team. We've got you. 💛**` },
+    { id: pid(), title: 'About Furosion', icon: '🐾', color: '#0a1a12', content: `# About Furosion\n\nFurosion is an **under-18 furry & therian outing** based in Bratislava, Slovakia.\n\nWe organise safe, fun, inclusive outings for young furries and therians in the region.\n\n## Our Mission\n\nTo create a welcoming space where young members of the furry and therian communities can meet, express themselves, and have a great time — safely.\n\n## Links\n\n- Website: [furosion.com](https://furosion.com)\n- Organisation: [furosion.org](https://furosion.org)\n- Contact: [support@furosion.com](mailto:support@furosion.com)\n\n---\n\n*Furosion is an organisational project run by volunteers.*` }
+  ];
+}
+
+function pid() { return Math.random().toString(36).slice(2,10); }
+function eid() { return 'id_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function esc(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+function fmt(ms) { const d = new Date(ms); return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }
+function timeAgo(ms) {
+  const d = Date.now() - ms; const m = Math.floor(d/60000); const h = Math.floor(m/60);
+  if (m < 2) return 'just now'; if (h < 1) return m + 'm ago'; if (h < 24) return h + 'h ago';
+  return Math.floor(h/24) + 'd ago';
+}
+
+// Generate short entry code for this device (stable per device)
+function getMyCode() {
+  // Derive a 6-digit code from deviceId that stays consistent
+  let hash = 0;
+  for (let i = 0; i < S.deviceId.length; i++) {
+    hash = ((hash << 5) - hash) + S.deviceId.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash % 900000 + 100000).toString();
+}
+
+// ==========================================================
+// ONLINE / OFFLINE
+// ==========================================================
+function checkOnline() {
+  const os = document.getElementById('offline-screen');
+  if (!navigator.onLine) { os.classList.add('show'); }
+  else { os.classList.remove('show'); }
+}
+function retryOnline() { location.reload(); }
+window.addEventListener('online', checkOnline);
+window.addEventListener('offline', checkOnline);
+
+// ==========================================================
+// SERVICE WORKER
+// ==========================================================
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+// ==========================================================
+// NOTIFICATIONS
+// ==========================================================
+function checkNotifBanner() {
+  const banner = document.getElementById('notif-request-banner');
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'default') banner.style.display = 'block';
+  else banner.style.display = 'none';
+}
+
+async function requestNotifs() {
+  const perm = await Notification.requestPermission();
+  document.getElementById('notif-request-banner').style.display = 'none';
+  if (perm === 'granted') toast('Notifications enabled!', 'ok');
+  else toast('Notifications blocked', 'err');
+}
+
+async function sendTestNotif() {
+  const title = document.getElementById('notif-title').value || 'Furosion';
+  const body = document.getElementById('notif-body').value || 'Test notification';
+  if (Notification.permission !== 'granted') {
+    const p = await Notification.requestPermission();
+    if (p !== 'granted') { toast('Notifications not permitted', 'err'); return; }
+  }
+  if ('serviceWorker' in navigator) {
+    const reg = await navigator.serviceWorker.ready;
+    reg.showNotification(title, { body, icon: 'https://furosion.com/logo.png', badge: 'https://furosion.com/logo.png', tag: 'furosion-admin' });
+    toast('Notification sent!', 'ok');
+  }
+}
+
+// ==========================================================
+// LOGO TAP (5x = admin)
+// ==========================================================
+let logoTaps = 0, logoTimer = null;
+function logoTap() {
+  logoTaps++;
+  clearTimeout(logoTimer);
+  logoTimer = setTimeout(() => { logoTaps = 0; }, 1500);
+  if (logoTaps >= 5) { logoTaps = 0; openPinScreen(); }
+}
+
+// ==========================================================
+// GESTURE — 4-finger hold
+// ==========================================================
+(function() {
+  let holdT = null;
+  document.addEventListener('touchstart', e => {
+    if (e.touches.length >= 4) holdT = setTimeout(openPinScreen, 1800);
+  }, { passive: true });
+  document.addEventListener('touchend', () => clearTimeout(holdT), { passive: true });
+  document.addEventListener('touchmove', () => clearTimeout(holdT), { passive: true });
+  // Keyboard shortcut for desktop
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'A') openPinScreen();
+  });
+})();
+
+// ==========================================================
+// PIN
+// ==========================================================
+let pinBuf = '';
+
+function openPinScreen() {
+  pinBuf = '';
+  updatePinDots(false);
+  document.getElementById('pin-overlay').classList.add('open');
+}
+function pinCancel() {
+  document.getElementById('pin-overlay').classList.remove('open');
+  pinBuf = '';
+}
+function pinKey(d) {
+  if (pinBuf.length >= 4) return;
+  pinBuf += d;
+  updatePinDots(false);
+  if (pinBuf.length === 4) {
+    setTimeout(() => {
+      if (pinBuf === (S.event.pin || '4242')) {
+        document.getElementById('pin-overlay').classList.remove('open');
+        openAdmin();
+      } else {
+        updatePinDots(true);
+        setTimeout(() => { pinBuf = ''; updatePinDots(false); }, 700);
+      }
+    }, 80);
+  }
+}
+function pinDel() { pinBuf = pinBuf.slice(0,-1); updatePinDots(false); }
+function updatePinDots(err) {
+  for (let i = 0; i < 4; i++) {
+    const d = document.getElementById('pd'+i);
+    d.classList.toggle('on', !err && i < pinBuf.length);
+    d.classList.toggle('err', err);
+  }
+}
+
+// ==========================================================
+// ADMIN
+// ==========================================================
+function openAdmin() {
+  loadAdminEvent();
+  renderAdmDevices();
+  renderAdmComps();
+  renderAdmVoting();
+  renderAdmPages();
+  renderAdmSchedule();
+  renderAdmStaff();
+  renderAdmLF();
+  document.getElementById('admin-overlay').classList.add('open');
+}
+function closeAdmin() { document.getElementById('admin-overlay').classList.remove('open'); }
+
+function adminTab(el, name) {
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('adm-' + name).classList.add('active');
+}
+
+// EVENT CONFIG
+function loadAdminEvent() {
+  document.getElementById('adm-event-name').value = S.event.name || '';
+  document.getElementById('adm-announcement').value = S.event.announcement || '';
+  document.getElementById('adm-days').value = S.event.days || 3;
+  document.getElementById('adm-pin-input').value = S.event.pin || '4242';
+}
+function saveEvent() {
+  S.event.name = document.getElementById('adm-event-name').value.trim() || 'Furosion';
+  S.event.announcement = document.getElementById('adm-announcement').value.trim();
+  S.event.days = parseInt(document.getElementById('adm-days').value) || 3;
+  const pin = document.getElementById('adm-pin-input').value.trim();
+  if (/^\d{4}$/.test(pin)) S.event.pin = pin;
+  save();
+  renderHome(); updateEventPill();
+  toast('Event config saved!', 'ok');
+}
+function resetAll() {
+  if (!confirm('Reset ALL event data? Votes, sessions, competitions, devices — all gone.')) return;
+  const id = S.deviceId; const pin = S.event.pin;
+  S = JSON.parse(JSON.stringify(DEFAULTS));
+  S.deviceId = id; S.event.pin = pin; S.pages = defaultPages();
+  save();
+  renderAll(); updateEventPill();
+  toast('Event data reset', 'ok');
+}
+
+// DEVICES
+function renderAdmDevices() {
+  // Pending codes
+  const pl = document.getElementById('adm-pending-list');
+  const pending = (S.pendingCodes || []).filter(c => !c.verified);
+  pl.innerHTML = pending.length === 0
+    ? '<div class="text-xs" style="padding:12px;color:var(--text3)">No devices waiting to be verified</div>'
+    : pending.map(c => `
+      <div class="list-item">
+        <div class="list-item-main">
+          <div class="list-item-title" style="font-family:var(--font-display);font-size:22px;letter-spacing:4px;color:var(--yellow)">${esc(c.code)}</div>
+          <div class="list-item-sub">${timeAgo(c.ts)} · requesting ${esc(c.role || 'voter')}</div>
+        </div>
+        <div class="list-item-actions">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <select class="form-select" id="role-sel-${c.id}" style="font-size:11px;padding:6px 8px;min-width:90px">
+              <option value="voter">Voter</option>
+              <option value="competitor">Competitor</option>
+              <option value="staff">Staff</option>
+            </select>
+            <button class="btn btn-yellow btn-sm" onclick="approveCode('${c.id}')">Approve ✓</button>
+          </div>
+          <button class="btn-icon btn-danger" style="width:34px;height:34px;border:1px solid rgba(255,77,94,0.3);color:var(--red)" onclick="denyCode('${c.id}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>`).join('');
+
+  // Verified devices
+  const dl = document.getElementById('adm-device-list');
+  const devices = S.devices || [];
+  dl.innerHTML = devices.length === 0
+    ? '<div class="text-xs" style="padding:12px;color:var(--text3)">No verified devices yet</div>'
+    : devices.map(d => {
+        const roleColor = {voter:'badge-yellow',competitor:'badge-orange',staff:'badge-green'}[d.role]||'badge-dim';
+        return `<div class="list-item">
+          <div class="list-item-main">
+            <div class="list-item-sub">${esc(d.id.slice(0,20))}...</div>
+            <div style="margin-top:4px"><span class="badge ${roleColor}">${esc(d.role)}</span></div>
+            <div class="list-item-sub" style="margin-top:3px">${fmt(d.ts)}</div>
+          </div>
+          <button class="btn-icon" style="color:var(--red);border-color:rgba(255,77,94,0.3)" onclick="revokeDevice('${d.id}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>`;
+      }).join('');
+}
+
+function approveCode(codeId) {
+  const c = (S.pendingCodes || []).find(x => x.id === codeId);
+  if (!c) return;
+  const role = document.getElementById('role-sel-' + codeId)?.value || 'voter';
+  c.verified = true; c.role = role;
+  if (!S.devices) S.devices = [];
+  S.devices.push({ id: c.deviceId, role, ts: Date.now() });
+  // If this device is the current one, verify session
+  if (c.deviceId === S.deviceId) verifySession(role);
+  save(); renderAdmDevices();
+  toast('Device verified as ' + role, 'ok');
+}
+
+function denyCode(codeId) {
+  S.pendingCodes = (S.pendingCodes || []).filter(x => x.id !== codeId);
+  save(); renderAdmDevices();
+  toast('Code denied', 'err');
+}
+
+function revokeDevice(id) {
+  S.devices = (S.devices || []).filter(d => d.id !== id);
+  if (S.deviceId === id) { S.session = null; save(); renderVerify(); }
+  save(); renderAdmDevices(); renderHome();
+  toast('Device revoked', 'ok');
+}
+
+function demoVerify(role) {
+  verifySession(role);
+  if (!S.devices) S.devices = [];
+  if (!S.devices.find(d => d.id === S.deviceId)) {
+    S.devices.push({ id: S.deviceId, role, ts: Date.now() });
+  }
+  save(); renderAdmDevices(); renderHome(); renderVerify();
+  toast('Demo: verified as ' + role, 'ok');
+}
+
+function verifySession(role) {
+  S.session = { role, verifiedAt: Date.now() };
+  save(); renderVerify(); renderHome();
+}
+
+// COMPETITIONS
+function renderAdmComps() {
+  const sel = document.getElementById('adm-cand-comp');
+  sel.innerHTML = S.competitions.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('') || '<option value="">No competitions yet</option>';
+  const list = document.getElementById('adm-comp-list');
+  list.innerHTML = S.competitions.length === 0
+    ? '<div class="text-xs" style="padding:12px;color:var(--text3)">No competitions yet</div>'
+    : S.competitions.map(c => `
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div><div class="list-item-title">${esc(c.name)}</div><div class="list-item-sub">${esc(c.category)} · ${(c.candidates||[]).length} candidates</div></div>
+          <button class="btn-icon" style="color:var(--red);border-color:rgba(255,77,94,0.3)" onclick="delComp('${c.id}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2"/></svg>
+          </button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          ${(c.candidates||[]).map(x => `<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--bg3);border-radius:var(--radius-sm)"><span style="flex:1;font-size:13px">${esc(x.name)}</span><span class="text-xs">${x.votes||0} votes</span><button class="btn-icon" style="width:28px;height:28px;color:var(--red)" onclick="delCand('${c.id}','${x.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>`).join('')}
+        </div>
+      </div>`).join('');
+}
+
+function addComp() {
+  const name = document.getElementById('adm-comp-name').value.trim();
+  const cat = document.getElementById('adm-comp-cat').value.trim();
+  if (!name || !cat) { toast('Fill in name and category', 'err'); return; }
+  S.competitions.push({ id: eid(), name, category: cat, state: 'closed', candidates: [] });
+  document.getElementById('adm-comp-name').value = '';
+  document.getElementById('adm-comp-cat').value = '';
+  save(); renderAdmComps(); renderAdmVoting(); renderVote(); renderHome();
+  toast('Competition added!', 'ok');
+}
+function delComp(id) {
+  S.competitions = S.competitions.filter(c => c.id !== id);
+  save(); renderAdmComps(); renderAdmVoting(); renderVote(); renderHome();
+  toast('Competition removed', 'ok');
+}
+function addCand() {
+  const cid = document.getElementById('adm-cand-comp').value;
+  const name = document.getElementById('adm-cand-name').value.trim();
+  const desc = document.getElementById('adm-cand-desc').value.trim();
+  if (!cid || !name) { toast('Select competition & enter name', 'err'); return; }
+  const comp = S.competitions.find(c => c.id === cid);
+  if (!comp) return;
+  comp.candidates.push({ id: eid(), name, desc, votes: 0 });
+  document.getElementById('adm-cand-name').value = '';
+  document.getElementById('adm-cand-desc').value = '';
+  save(); renderAdmComps(); renderVote();
+  toast('Candidate added!', 'ok');
+}
+function delCand(compId, candId) {
+  const comp = S.competitions.find(c => c.id === compId);
+  if (comp) comp.candidates = comp.candidates.filter(x => x.id !== candId);
+  save(); renderAdmComps(); renderVote();
+  toast('Candidate removed', 'ok');
+}
+
+// VOTING CONTROL
+function renderAdmVoting() {
+  const list = document.getElementById('adm-voting-list');
+  const comps = S.competitions;
+  if (comps.length === 0) { list.innerHTML = '<div class="text-xs" style="padding:12px;color:var(--text3)">No competitions yet</div>'; return; }
+  list.innerHTML = comps.map(c => {
+    const states = ['closed','open','revealed'];
+    const labels = { closed:'Closed', open:'Open', revealed:'Revealed' };
+    const badges = { closed:'badge-dim', open:'badge-green', revealed:'badge-yellow' };
+    const st = c.state || 'closed';
+    const total = (c.candidates||[]).reduce((s,x) => s+(x.votes||0), 0);
+    return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 15px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div><div class="list-item-title">${esc(c.name)}</div><div class="list-item-sub">${esc(c.category)} · ${total} total votes</div></div>
+        <span class="badge ${badges[st]}">${labels[st]}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+        <button class="btn btn-surface btn-sm" onclick="setVotingState('${c.id}','closed')">Close</button>
+        <button class="btn btn-yellow btn-sm" onclick="setVotingState('${c.id}','open')">Open</button>
+        <button class="btn btn-outline btn-sm" onclick="setVotingState('${c.id}','revealed')">Reveal</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setVotingState(id, state) {
+  const comp = S.competitions.find(c => c.id === id);
+  if (comp) comp.state = state;
+  save(); renderAdmVoting(); renderVote(); renderHome(); checkVoteBadge();
+  toast('Voting ' + state, 'ok');
+}
+
+// PAGES
+let editingPage = null;
+function renderAdmPages() {
+  const list = document.getElementById('adm-pages-list');
+  list.innerHTML = S.pages.map(p => `
+    <div class="list-item">
+      <div style="font-size:22px">${esc(p.icon)||'📄'}</div>
+      <div class="list-item-main"><div class="list-item-title">${esc(p.title)}</div></div>
+      <div class="list-item-actions">
+        <button class="btn-icon" style="color:var(--yellow);border-color:rgba(232,200,64,0.3)" onclick="editPage('${p.id}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="btn-icon" style="color:var(--red);border-color:rgba(255,77,94,0.3)" onclick="delPage('${p.id}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2"/></svg>
+        </button>
+      </div>
+    </div>`).join('') || '<div class="text-xs" style="padding:12px;color:var(--text3)">No pages yet</div>';
+}
+function savePage() {
+  const title = document.getElementById('adm-page-title').value.trim();
+  const icon = document.getElementById('adm-page-icon').value.trim() || '📄';
+  const color = document.getElementById('adm-page-color').value.trim() || '#1a1800';
+  const content = document.getElementById('adm-page-content').value;
+  if (!title) { toast('Enter a page title', 'err'); return; }
+  if (editingPage) {
+    const p = S.pages.find(x => x.id === editingPage);
+    if (p) Object.assign(p, { title, icon, color, content });
+    editingPage = null;
+    document.getElementById('page-form-mode-label').textContent = 'Add New Page';
+  } else {
+    S.pages.push({ id: pid(), title, icon, color, content });
+  }
+  save(); clearPageForm(); renderAdmPages(); renderInfoPages();
+  toast('Page saved!', 'ok');
+}
+function editPage(id) {
+  const p = S.pages.find(x => x.id === id); if (!p) return;
+  editingPage = id;
+  document.getElementById('adm-page-title').value = p.title;
+  document.getElementById('adm-page-icon').value = p.icon || '';
+  document.getElementById('adm-page-color').value = p.color || '#1a1800';
+  document.getElementById('adm-page-content').value = p.content || '';
+  document.getElementById('page-form-mode-label').textContent = 'Edit Page';
+  document.getElementById('adm-page-title').scrollIntoView({ behavior:'smooth', block:'center' });
+}
+function delPage(id) {
+  S.pages = S.pages.filter(x => x.id !== id);
+  save(); renderAdmPages(); renderInfoPages();
+  toast('Page deleted', 'ok');
+}
+function clearPageForm() {
+  editingPage = null;
+  document.getElementById('adm-page-title').value = '';
+  document.getElementById('adm-page-icon').value = '';
+  document.getElementById('adm-page-color').value = '#1a1800';
+  document.getElementById('adm-page-content').value = '';
+  document.getElementById('page-form-mode-label').textContent = 'Add New Page';
+}
+
+// SCHEDULE
+function renderAdmSchedule() {
+  const list = document.getElementById('adm-sched-list');
+  const sorted = [...(S.schedule||[])].sort((a,b) => a.datetime - b.datetime);
+  list.innerHTML = sorted.map(s => `
+    <div class="list-item">
+      <div class="list-item-main">
+        <div class="list-item-title">${esc(s.title)}</div>
+        <div class="list-item-sub">${new Date(s.datetime).toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}${s.location?' · '+esc(s.location):''}</div>
+      </div>
+      <button class="btn-icon" style="color:var(--red);border-color:rgba(255,77,94,0.3)" onclick="delSched('${s.id}')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2"/></svg>
+      </button>
+    </div>`).join('') || '<div class="text-xs" style="padding:12px;color:var(--text3)">No schedule items yet</div>';
+}
+function addSchedItem() {
+  const time = document.getElementById('adm-sched-time').value;
+  const date = document.getElementById('adm-sched-date').value;
+  const title = document.getElementById('adm-sched-title').value.trim();
+  const desc = document.getElementById('adm-sched-desc').value.trim();
+  const loc = document.getElementById('adm-sched-loc').value.trim();
+  if (!time || !date || !title) { toast('Fill in date, time and title', 'err'); return; }
+  const datetime = new Date(date + 'T' + time).getTime();
+  S.schedule = S.schedule || [];
+  S.schedule.push({ id: eid(), datetime, title, desc, location: loc });
+  document.getElementById('adm-sched-time').value = '';
+  document.getElementById('adm-sched-title').value = '';
+  document.getElementById('adm-sched-desc').value = '';
+  document.getElementById('adm-sched-loc').value = '';
+  save(); renderAdmSchedule(); renderSchedule();
+  toast('Schedule item added!', 'ok');
+}
+function delSched(id) {
+  S.schedule = (S.schedule||[]).filter(x => x.id !== id);
+  save(); renderAdmSchedule(); renderSchedule();
+  toast('Item removed', 'ok');
+}
+
+// STAFF
+function renderAdmStaff() {
+  const list = document.getElementById('adm-staff-list');
+  list.innerHTML = (S.staff||[]).map(s => `
+    <div class="list-item">
+      <div style="font-size:20px">${esc(s.avatar)||'👤'}</div>
+      <div class="list-item-main">
+        <div class="list-item-title">${esc(s.name)}</div>
+        <div class="list-item-sub">${esc(s.role)}${s.location?' · '+esc(s.location):''}</div>
+      </div>
+      <div class="list-item-actions">
+        <select class="form-select" style="font-size:11px;padding:6px 8px;width:90px" onchange="setStaffStatus('${s.id}',this.value)">
+          <option value="online" ${s.status==='online'?'selected':''}>On shift</option>
+          <option value="break" ${s.status==='break'?'selected':''}>Break</option>
+          <option value="offline" ${s.status==='offline'?'selected':''}>Off duty</option>
+        </select>
+        <button class="btn-icon" style="color:var(--red);border-color:rgba(255,77,94,0.3)" onclick="delStaff('${s.id}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2"/></svg>
+        </button>
+      </div>
+    </div>`).join('') || '<div class="text-xs" style="padding:12px;color:var(--text3)">No staff members yet</div>';
+}
+function addStaff() {
+  const name = document.getElementById('adm-staff-name').value.trim();
+  const role = document.getElementById('adm-staff-role').value.trim();
+  const loc = document.getElementById('adm-staff-loc').value.trim();
+  const avatar = document.getElementById('adm-staff-avatar').value.trim() || '👤';
+  const color = document.getElementById('adm-staff-color').value;
+  const status = document.getElementById('adm-staff-status').value;
+  if (!name) { toast('Enter a name', 'err'); return; }
+  S.staff = S.staff || [];
+  S.staff.push({ id: eid(), name, role, location: loc, avatar, color, status });
+  document.getElementById('adm-staff-name').value = '';
+  document.getElementById('adm-staff-role').value = '';
+  document.getElementById('adm-staff-loc').value = '';
+  document.getElementById('adm-staff-avatar').value = '';
+  save(); renderAdmStaff(); renderStaff();
+  toast('Staff member added!', 'ok');
+}
+function setStaffStatus(id, status) {
+  const s = (S.staff||[]).find(x => x.id === id);
+  if (s) s.status = status;
+  save(); renderAdmStaff(); renderStaff();
+  toast('Status updated', 'ok');
+}
+function delStaff(id) {
+  S.staff = (S.staff||[]).filter(x => x.id !== id);
+  save(); renderAdmStaff(); renderStaff();
+  toast('Removed', 'ok');
+}
+
+// LOST & FOUND (admin)
+function renderAdmLF() {
+  const list = document.getElementById('adm-lf-list');
+  list.innerHTML = (S.lostFound||[]).map(item => `
+    <div class="list-item">
+      <div style="font-size:22px">${esc(item.emoji)||'❓'}</div>
+      <div class="list-item-main">
+        <div class="list-item-title">${esc(item.title)}</div>
+        <div class="list-item-sub">${timeAgo(item.ts)}</div>
+      </div>
+      <div class="list-item-actions">
+        <button class="btn btn-sm ${item.claimed?'btn-surface':'btn-yellow'}" onclick="toggleClaim('${item.id}')" style="font-size:11px;padding:7px 10px;width:auto">${item.claimed?'Unclaim':'Claimed'}</button>
+        <button class="btn-icon" style="color:var(--red);border-color:rgba(255,77,94,0.3)" onclick="delLF('${item.id}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2"/></svg>
+        </button>
+      </div>
+    </div>`).join('') || '<div class="text-xs" style="padding:12px;color:var(--text3)">No items reported yet</div>';
+}
+function addLFItem() {
+  const emoji = document.getElementById('adm-lf-emoji').value.trim() || '❓';
+  const title = document.getElementById('adm-lf-title').value.trim();
+  const desc = document.getElementById('adm-lf-desc').value.trim();
+  if (!title) { toast('Enter item name', 'err'); return; }
+  S.lostFound = S.lostFound || [];
+  S.lostFound.unshift({ id: eid(), emoji, title, desc, ts: Date.now(), claimed: false });
+  document.getElementById('adm-lf-emoji').value = '';
+  document.getElementById('adm-lf-title').value = '';
+  document.getElementById('adm-lf-desc').value = '';
+  save(); renderAdmLF(); renderLostFound();
+  toast('Item added!', 'ok');
+}
+function toggleClaim(id) {
+  const item = (S.lostFound||[]).find(x => x.id === id);
+  if (item) item.claimed = !item.claimed;
+  save(); renderAdmLF(); renderLostFound();
+  toast(item && item.claimed ? 'Marked as claimed' : 'Unclaimed', 'ok');
+}
+function delLF(id) {
+  S.lostFound = (S.lostFound||[]).filter(x => x.id !== id);
+  save(); renderAdmLF(); renderLostFound();
+  toast('Item removed', 'ok');
+}
+
+// ==========================================================
+// VERIFY SCREEN
+// ==========================================================
+function renderVerify() {
+  checkSession();
+  const myCode = getMyCode();
+  const codeEl = document.getElementById('my-code');
+  if (codeEl) {
+    codeEl.textContent = myCode;
+    document.getElementById('my-code-id').textContent = 'Device: ' + S.deviceId.slice(0,18);
+  }
+
+  // Register pending code if not already pending
+  if (!S.session) {
+    S.pendingCodes = S.pendingCodes || [];
+    if (!S.pendingCodes.find(c => c.deviceId === S.deviceId && !c.verified)) {
+      S.pendingCodes.push({ id: eid(), deviceId: S.deviceId, code: myCode, ts: Date.now(), verified: false });
+      save();
+    }
+    document.getElementById('verify-pending').style.display = 'flex';
+  }
+
+  const unverified = document.getElementById('verify-unverified');
+  const verified = document.getElementById('verify-verified');
+  if (S.session) {
+    unverified.style.display = 'none';
+    verified.style.display = 'flex';
+    document.getElementById('verified-role').textContent = cap(S.session.role);
+    document.getElementById('verified-id').textContent = 'Device: ' + S.deviceId.slice(0,18);
+    const exp = new Date(S.session.verifiedAt + (S.event.days||3)*86400000);
+    document.getElementById('verified-expiry').textContent = 'Expires: ' + exp.toLocaleDateString() + ' ' + exp.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  } else {
+    unverified.style.display = 'flex';
+    verified.style.display = 'none';
+  }
+}
+
+// ==========================================================
+// SESSION CHECK
+// ==========================================================
+function checkSession() {
+  if (!S.session) return;
+  const exp = S.session.verifiedAt + (S.event.days||3)*86400000;
+  if (Date.now() > exp) {
+    S.session = null; save();
+    toast('Session expired — please re-verify', 'err');
+    renderVerify(); renderHome();
+  }
+}
+
+// ==========================================================
+// HOME
+// ==========================================================
+function renderHome() {
+  checkSession();
+  const role = S.session ? cap(S.session.role) : 'Guest';
+  document.getElementById('home-role').textContent = role;
+  const greet = S.session ? ('Attending as') : 'Welcome to';
+  document.getElementById('home-greeting').textContent = greet;
+  document.getElementById('home-event-name').textContent = S.event.name || 'Furosion';
+  document.getElementById('home-sub').textContent = S.session
+    ? 'Your device is verified for this event'
+    : 'Show your entry code to a staff member to get verified';
+
+  if (S.session) {
+    const exp = new Date(S.session.verifiedAt + (S.event.days||3)*86400000);
+    const diff = exp - Date.now();
+    const hrs = Math.floor(diff/3600000);
+    const label = hrs > 24 ? Math.floor(hrs/24)+'d left' : hrs+'h left';
+    document.getElementById('home-session').innerHTML = `<span style="color:var(--green)">${label}</span>`;
+  } else {
+    document.getElementById('home-session').innerHTML = '<span style="color:var(--red)">Unverified</span>';
+  }
+
+  const open = S.competitions.filter(c => c.state === 'open').length;
+  document.getElementById('home-open-count').textContent = open;
+  document.getElementById('home-vote-sub').textContent = open > 0 ? 'Tap to vote now' : 'No competitions open right now';
+
+  // Announcement
+  const az = document.getElementById('announcement-zone');
+  az.innerHTML = S.event.announcement
+    ? `<div class="announcement-bar"><div class="ann-icon">📢</div><div class="ann-text">${esc(S.event.announcement)}</div></div>`
+    : '';
+
+  // My votes
+  const mv = document.getElementById('home-my-votes');
+  const entries = Object.entries(S.votes);
+  if (entries.length === 0) {
+    mv.innerHTML = '<div class="text-xs" style="padding:8px 0;color:var(--text3)">No votes cast yet</div>';
+  } else {
+    mv.innerHTML = entries.map(([key, candId]) => {
+      const [compId, cat] = key.split('::');
+      const comp = S.competitions.find(c => c.id === compId);
+      const cand = comp ? comp.candidates.find(x => x.id === candId) : null;
+      return `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm)">
+        <div style="font-size:10px;font-family:var(--font-mono);color:var(--text3);min-width:70px">${esc(cat)}</div>
+        <div style="font-size:13px;font-weight:600">${cand ? esc(cand.name) : 'Unknown'}</div>
+        <span class="badge badge-yellow" style="margin-left:auto">voted</span>
+      </div>`;
+    }).join('');
+  }
+
+  updateEventPill();
+  checkNotifBanner();
+}
+
+function updateEventPill() {
+  const el = document.getElementById('event-pill');
+  if (el) el.textContent = S.event.name || 'Furosion';
+}
+
+// ==========================================================
+// VOTE SCREEN
+// ==========================================================
+function renderVote() {
+  const el = document.getElementById('vote-content');
+  const comps = S.competitions;
+  if (comps.length === 0) {
+    el.innerHTML = `<div class="empty" style="padding-top:60px">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <div class="empty-text">No competitions yet</div>
+      <div class="empty-sub">Check back soon!</div>
+    </div>`;
+    return;
+  }
+  el.innerHTML = comps.map(comp => {
+    const stateLabels = { closed:'Voting Closed', open:'Voting Open', revealed:'Results' };
+    const stateBadge = { closed:'badge-dim', open:'badge-green', revealed:'badge-yellow' };
+    const st = comp.state || 'closed';
+    const total = (comp.candidates||[]).reduce((s,x) => s+(x.votes||0), 0);
+    const myKey = comp.id + '::' + comp.category;
+    const myVote = S.votes[myKey];
+    const sorted = [...(comp.candidates||[])].sort((a,b) => st==='revealed' ? (b.votes||0)-(a.votes||0) : 0);
+
+    const canVote = st === 'open' && S.session;
+    const crows = sorted.map(c => {
+      const pct = total > 0 ? Math.round((c.votes||0)/total*100) : 0;
+      const isWinner = st==='revealed' && sorted[0]?.id===c.id && total>0;
+      const isMyVote = myVote === c.id;
+      const cls = isMyVote ? 'my-vote' : isWinner ? 'winner-row' : '';
+      const barCls = isWinner ? 'winner-bar' : '';
+      return `<div class="candidate-row ${cls}" onclick="${canVote ? `vote('${comp.id}','${comp.category}','${c.id}')` : ''}">
+        <div class="candidate-info">
+          <div class="candidate-name">${esc(c.name)}${isWinner?' 🏆':''}</div>
+          ${c.desc ? `<div class="candidate-desc">${esc(c.desc)}</div>` : ''}
+          ${(st==='revealed'||isMyVote) ? `<div class="candidate-bar-wrap"><div class="candidate-bar ${barCls}" style="width:${pct}%"></div></div>` : ''}
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          ${st==='revealed' ? `<div class="vote-pct">${pct}%</div>` : ''}
+          ${canVote ? `<div class="vote-check ${isMyVote?'checked':''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+
+    return `<div class="competition-block fade-in">
+      <div class="comp-header">
+        <div><div class="comp-cat">${esc(comp.category)}</div><div class="comp-name">${esc(comp.name)}</div></div>
+        <span class="badge ${stateBadge[st]}">${stateLabels[st]}</span>
+      </div>
+      ${!S.session && st==='open' ? '<div style="font-size:12px;color:var(--orange);font-family:var(--font-mono);margin-bottom:8px">Verify your device to cast a vote</div>' : ''}
+      <div class="candidate-list">${crows || '<div class="text-xs" style="padding:12px">No candidates yet</div>'}</div>
+      ${st==='revealed' && total > 0 ? `<div class="text-xs" style="margin-top:8px;text-align:right">${total} total votes</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function vote(compId, cat, candId) {
+  if (!S.session) { toast('Verify your device first', 'err'); return; }
+  const key = compId + '::' + cat;
+  if (S.votes[key]) { toast('Already voted in this category', 'err'); return; }
+  const comp = S.competitions.find(c => c.id === compId);
+  if (!comp || comp.state !== 'open') { toast('Voting not open', 'err'); return; }
+  const cand = comp.candidates.find(c => c.id === candId);
+  if (!cand) return;
+  cand.votes = (cand.votes||0) + 1;
+  S.votes[key] = candId;
+  save(); renderVote(); renderHome(); checkVoteBadge();
+  toast('Voted for ' + cand.name + '!', 'ok');
+}
+
+function checkVoteBadge() {
+  const open = S.competitions.filter(c => c.state === 'open');
+  const unvoted = S.session && open.some(c => !S.votes[c.id+'::'+c.category]);
+  document.getElementById('vote-badge').classList.toggle('show', unvoted);
+  document.getElementById('side-badge-vote').classList.toggle('show', unvoted);
+}
+
+// ==========================================================
+// INFO PAGES
+// ==========================================================
+function renderInfoPages() {
+  const list = document.getElementById('info-page-list');
+  const cv = document.getElementById('info-content-view');
+  if (S.pages.length === 0) {
+    list.innerHTML = '<div class="empty" style="padding-top:60px"><div class="empty-text">No info pages yet</div><div class="empty-sub">Ask an admin to add some</div></div>';
+    return;
+  }
+  list.innerHTML = '<div class="info-list">' + S.pages.map(p => `
+    <div class="info-page-item" onclick="openInfoPage('${p.id}')">
+      <div class="info-icon" style="background:${esc(p.color)||'rgba(232,200,64,0.1)'}">${p.icon||'📄'}</div>
+      <div style="flex:1"><div style="font-size:15px;font-weight:600">${esc(p.title)}</div></div>
+      <div class="info-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+    </div>`).join('') + '</div>';
+}
+
+function openInfoPage(id) {
+  const p = S.pages.find(x => x.id === id); if (!p) return;
+  document.getElementById('info-page-list').style.display = 'none';
+  const cv = document.getElementById('info-content-view');
+  cv.classList.add('show');
+  document.getElementById('info-content-body').innerHTML = marked.parse(p.content || '');
+}
+
+function backToInfoList() {
+  document.getElementById('info-page-list').style.display = 'block';
+  document.getElementById('info-content-view').classList.remove('show');
+}
+
+// ==========================================================
+// SCHEDULE
+// ==========================================================
+function renderSchedule() {
+  const el = document.getElementById('schedule-content');
+  const items = [...(S.schedule||[])].sort((a,b) => a.datetime - b.datetime);
+  if (items.length === 0) {
+    el.innerHTML = '<div class="empty" style="padding-top:40px"><div class="empty-text">No schedule items yet</div></div>';
+    return;
+  }
+  const now = Date.now();
+  el.innerHTML = '<div class="schedule-list">' + items.map((s, i) => {
+    const isNow = now >= s.datetime && (items[i+1] ? now < items[i+1].datetime : true);
+    const isPast = now > s.datetime && !isNow;
+    const time = new Date(s.datetime).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    const date = new Date(s.datetime).toLocaleDateString([],{month:'short',day:'numeric'});
+    return `<div class="schedule-item">
+      <div class="sched-time">${time}<br><span style="font-size:9px">${date}</span></div>
+      <div class="sched-line">
+        <div class="sched-dot ${isNow?'now':isPast?'past':''}"></div>
+        ${i < items.length-1 ? '<div class="sched-connector"></div>' : ''}
+      </div>
+      <div class="sched-content">
+        <div class="sched-title" style="${isPast?'opacity:0.5':''}${isNow?';color:var(--yellow)':''}">${esc(s.title)}${isNow?' <span style="font-size:11px;font-family:var(--font-mono);color:var(--yellow)">NOW</span>':''}</div>
+        ${s.desc ? `<div class="sched-desc" style="${isPast?'opacity:0.4':''}">${esc(s.desc)}</div>` : ''}
+        ${s.location ? `<div class="sched-location">${esc(s.location)}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('') + '</div>';
+}
+
+// ==========================================================
+// STAFF
+// ==========================================================
+function renderStaff() {
+  const el = document.getElementById('staff-content');
+  const staff = S.staff || [];
+  if (staff.length === 0) {
+    el.innerHTML = '<div class="empty" style="padding-top:40px"><div class="empty-text">No staff listed yet</div></div>';
+    return;
+  }
+  const statusLabel = { online:'On shift', break:'On break', offline:'Off duty' };
+  const statusColor = { online:'var(--green)', break:'var(--orange)', offline:'var(--text3)' };
+  el.innerHTML = '<div class="staff-grid">' + staff.map(s => `
+    <div class="staff-card">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="staff-avatar" style="background:${esc(s.color||'#1a1800')}">${esc(s.avatar||'👤')}</div>
+        <div>
+          <div class="staff-name">${esc(s.name)}</div>
+          <div class="staff-role">${esc(s.role)}</div>
+        </div>
+      </div>
+      ${s.location ? `<div class="staff-location">📍 ${esc(s.location)}</div>` : ''}
+      <div style="display:flex;align-items:center;gap:6px;font-size:10px;font-family:var(--font-mono);color:${statusColor[s.status||'online']}">
+        <span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block"></span>
+        ${statusLabel[s.status||'online']}
+      </div>
+    </div>`).join('') + '</div>';
+}
+
+// ==========================================================
+// COMPETITORS
+// ==========================================================
+const AVATAR_COLORS = ['#1a0f00','#0a0f1a','#0a1a0f','#1a0a1a','#1a1500','#001a1a'];
+function renderCompetitors() {
+  const el = document.getElementById('competitors-content');
+  // Build from competition candidates + any standalone competitor profiles
+  const all = [];
+  S.competitions.forEach(comp => {
+    (comp.candidates||[]).forEach(c => {
+      if (!all.find(x => x.name === c.name)) {
+        all.push({ id: c.id, name: c.name, desc: c.desc, competition: comp.name, category: comp.category, compId: comp.id });
+      }
+    });
+  });
+  if (all.length === 0) {
+    el.innerHTML = '<div class="empty" style="padding-top:40px"><div class="empty-text">No competitors yet</div></div>';
+    return;
+  }
+  el.innerHTML = '<div class="competitor-grid">' + all.map((c, i) => {
+    const bg = AVATAR_COLORS[i % AVATAR_COLORS.length];
+    const initials = c.name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+    return `<div class="competitor-card" onclick="showCompetitor('${c.compId}','${c.id}')">
+      <div class="competitor-banner" style="background:${bg}">
+        <span style="color:var(--yellow);text-shadow:0 0 20px rgba(232,200,64,0.3)">${initials}</span>
+      </div>
+      <div class="competitor-body">
+        <div class="competitor-name">${esc(c.name)}</div>
+        <div class="competitor-cat">${esc(c.category)}</div>
+        ${c.desc ? `<div class="competitor-bio">${esc(c.desc)}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('') + '</div>';
+}
+
+function showCompetitor(compId, candId) {
+  const comp = S.competitions.find(c => c.id === compId);
+  const cand = comp ? comp.candidates.find(c => c.id === candId) : null;
+  if (!cand) return;
+  document.getElementById('competitors-content').style.display = 'none';
+  const detail = document.getElementById('competitor-detail');
+  detail.classList.add('show');
+  const initials = cand.name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+  const total = (comp.candidates||[]).reduce((s,x) => s+(x.votes||0), 0);
+  const pct = total > 0 ? Math.round((cand.votes||0)/total*100) : 0;
+  document.getElementById('competitor-detail-body').innerHTML = `
+    <div class="competitor-detail-banner" style="background:#1a1500">
+      <span style="color:var(--yellow);text-shadow:0 0 30px rgba(232,200,64,0.4)">${initials}</span>
+    </div>
+    <div style="font-family:var(--font-display);font-size:28px;font-weight:900;letter-spacing:-0.5px">${esc(cand.name)}</div>
+    <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+      <span class="badge badge-yellow">${esc(comp.category)}</span>
+      <span class="badge badge-dim">${esc(comp.name)}</span>
+    </div>
+    ${cand.desc ? `<p style="font-size:14px;color:var(--text2);line-height:1.7;margin-top:14px">${esc(cand.desc)}</p>` : ''}
+    ${comp.state === 'revealed' || S.votes[comp.id+'::'+comp.category] === cand.id ? `
+    <div style="margin-top:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
+      <div class="card-label">Vote Share</div>
+      <div style="font-family:var(--font-display);font-size:36px;font-weight:900;color:var(--yellow)">${pct}%</div>
+      <div class="candidate-bar-wrap" style="margin-top:8px"><div class="candidate-bar" style="width:${pct}%"></div></div>
+      <div class="text-xs" style="margin-top:6px">${cand.votes||0} of ${total} votes</div>
+    </div>` : ''}
+    ${comp.state === 'open' && S.session && !S.votes[comp.id+'::'+comp.category] ? `
+    <button class="btn btn-yellow" style="margin-top:16px" onclick="vote('${comp.id}','${comp.category}','${cand.id}');backToCompetitorList()">Vote for ${esc(cand.name)}</button>
+    ` : ''}
+  `;
+}
+
+function backToCompetitorList() {
+  document.getElementById('competitors-content').style.display = '';
+  document.getElementById('competitor-detail').classList.remove('show');
+}
+
+// ==========================================================
+// LOST & FOUND
+// ==========================================================
+function renderLostFound() {
+  const el = document.getElementById('lf-content');
+  const items = S.lostFound || [];
+  if (items.length === 0) {
+    el.innerHTML = '<div class="empty" style="padding-top:40px"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><div class="empty-text">Nothing reported yet</div><div class="empty-sub">Items found at the venue will appear here</div></div>';
+    return;
+  }
+  el.innerHTML = '<div class="lf-grid">' + items.map(item => `
+    <div class="lf-item" style="${item.claimed?'opacity:0.5':''}">
+      <div class="lf-emoji">${esc(item.emoji)||'❓'}</div>
+      <div class="lf-info">
+        <div class="lf-title">${esc(item.title)}</div>
+        ${item.desc ? `<div class="lf-desc">${esc(item.desc)}</div>` : ''}
+        <div class="lf-footer">
+          <div class="lf-time">${timeAgo(item.ts)}</div>
+          ${item.claimed ? '<div class="lf-status-claimed">✓ Claimed</div>' : '<div style="font-size:10px;font-family:var(--font-mono);color:var(--yellow)">At Registration</div>'}
+        </div>
+      </div>
+    </div>`).join('') + '</div>';
+}
+
+// ==========================================================
+// NAVIGATION
+// ==========================================================
+let currentScreen = 'home';
+const moreScreens = ['schedule', 'staff', 'competitors', 'lostfound'];
+let moreIdx = 0;
+
+function switchScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  currentScreen = name;
+
+  // Render on switch
+  const renderers = {
+    home: renderHome, vote: renderVote, verify: renderVerify,
+    info: renderInfoPages, schedule: renderSchedule,
+    staff: renderStaff, competitors: renderCompetitors, lostfound: renderLostFound
+  };
+  if (renderers[name]) renderers[name]();
+}
+
+function mobileNav(el) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function sideNav(el) {
+  document.querySelectorAll('.side-nav-btn').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+}
+
+// Mobile "More" cycles through extra screens
+function cycleMore() {
+  const screens = ['schedule','staff','competitors','lostfound'];
+  const names = ['Schedule','Staff','Competitors','Lost & Found'];
+  moreIdx = (moreIdx + 1) % screens.length;
+  switchScreen(screens[moreIdx]);
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('bnav-more').classList.add('active');
+  const moreBtn = document.getElementById('bnav-more');
+  moreBtn.querySelector('svg').style.color = 'var(--yellow)';
+  toast('Switched to ' + names[moreIdx], 'info');
+}
+
+// ==========================================================
+// TOAST
+// ==========================================================
+let toastTimer;
+function toast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.className = '', 2800);
+}
+
+// ==========================================================
+// RENDER ALL
+// ==========================================================
+function renderAll() {
+  renderHome(); renderVote(); renderVerify();
+  renderInfoPages(); renderSchedule(); renderStaff();
+  renderCompetitors(); renderLostFound();
+  checkVoteBadge();
+}
+
+// ==========================================================
+// INIT
+// ==========================================================
+function init() {
+  checkOnline();
+  checkSession();
+  renderAll();
+  updateEventPill();
+  // Auto-poll for session changes (simulates real-time verification)
+  setInterval(() => {
+    // In a real app this would be a fetch to your server
+    // Here we just re-check local state for demo
+    checkSession();
+    checkVoteBadge();
+  }, 5000);
+}
+
+init();
+</script>
+</body>
+</html>
