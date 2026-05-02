@@ -345,7 +345,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:va
 <div id="admin-overlay">
   <div class="admin-topbar">
     <div style="display:flex;align-items:center;gap:9px">
-      <div class="logo-mark" style="width:28px;height:28px;border-radius:7px"><img src="https://furosion.com/logo.png" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt="Furosion logo" width="30" height="30" style="width:30px;height:30px;object-fit:contain;border-radius:6px"><span class="logo-fallback" style="display:none">F</span></div>
+      <div class="logo-mark" style="width:28px;height:28px;border-radius:7px"><img src="https://furosion.com/logo.png" alt="Furosion" width="28" height="28" style="width:28px;height:28px;object-fit:contain;display:block" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><span class="logo-fallback" style="display:none">F</span></div>
       <div class="admin-title-text">Admin Panel</div>
     </div>
     <div style="display:flex;align-items:center;gap:10px">
@@ -518,13 +518,64 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:va
   </div>
 </div>
 
+
+<!-- ══ PWA INSTALL PROMPT ══ -->
+<div class="overlay" id="install-overlay" style="background:rgba(0,0,0,0.85);backdrop-filter:blur(20px);z-index:5000;align-items:flex-end">
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg) var(--radius-lg) 0 0;padding:28px 24px 40px;width:100%;max-width:480px;margin:0 auto;display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:48px;height:48px;background:var(--yellow);border-radius:13px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:20px;font-weight:900;color:var(--bg)">F</div>
+        <div>
+          <div style="font-family:var(--font-display);font-size:16px;font-weight:900;color:var(--yellow)">Install Furosion</div>
+          <div style="font-size:11px;color:var(--text2);font-family:var(--font-mono)">For the best experience</div>
+        </div>
+      </div>
+      <button class="btn-icon" onclick="dismissInstall()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+
+    <!-- iOS instructions -->
+    <div id="install-ios" style="display:none;flex-direction:column;gap:14px">
+      <div style="font-size:14px;font-weight:600">Add to your Home Screen on iPhone</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:12px;background:var(--surface);border-radius:var(--radius)">
+          <div style="width:28px;height:28px;background:rgba(90,180,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">1</div>
+          <div><div style="font-size:13px;font-weight:600">Tap the Share button</div><div style="font-size:12px;color:var(--text2);margin-top:2px">The box with an arrow at the bottom of Safari &#x2B06;</div></div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:12px;background:var(--surface);border-radius:var(--radius)">
+          <div style="width:28px;height:28px;background:rgba(90,180,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">2</div>
+          <div><div style="font-size:13px;font-weight:600">Tap "Add to Home Screen"</div><div style="font-size:12px;color:var(--text2);margin-top:2px">Scroll down in the share sheet to find it &#x2795;</div></div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:12px;background:var(--surface);border-radius:var(--radius)">
+          <div style="width:28px;height:28px;background:rgba(90,180,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">3</div>
+          <div><div style="font-size:13px;font-weight:600">Tap Add</div><div style="font-size:12px;color:var(--text2);margin-top:2px">Furosion will appear on your home screen &#x2728;</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Android instructions -->
+    <div id="install-android" style="display:none;flex-direction:column;gap:14px">
+      <div style="font-size:14px;font-weight:600">Install on Android</div>
+      <button class="btn btn-yellow" onclick="triggerInstall()">Install Furosion App &#x2B07;</button>
+      <div style="font-size:12px;color:var(--text2);text-align:center;line-height:1.6">Or tap the menu in Chrome and choose<br><strong>"Add to Home screen"</strong></div>
+    </div>
+
+    <!-- Generic -->
+    <div id="install-generic" style="display:none;flex-direction:column;gap:14px">
+      <div style="font-size:14px;font-weight:600">Install as an app</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.7">In your browser menu, look for <strong>"Install app"</strong> or <strong>"Add to Home Screen"</strong> to install Furosion for the best experience.</div>
+    </div>
+
+    <button class="btn btn-surface" onclick="dismissInstall()">Continue in browser</button>
+  </div>
+</div>
+
 <!-- ══════════ APP ══════════ -->
 <div id="app">
 
   <!-- Desktop Sidebar -->
   <nav class="desktop-sidebar">
     <div class="topbar-logo" onclick="logoTap()">
-      <div class="logo-mark"><img src="https://furosion.com/logo.png" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt="Furosion logo" width="30" height="30" style="width:30px;height:30px;object-fit:contain;border-radius:6px"><span class="logo-fallback">F</span></div>
+      <div class="logo-mark"><img src="https://furosion.com/logo.png" alt="Furosion" width="28" height="28" style="width:28px;height:28px;object-fit:contain;display:block" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><span class="logo-fallback">F</span></div>
       <div class="logo-wordmark">Furosion</div>
     </div>
     <div class="side-btn active" id="snav-home" onclick="nav('home',this)">
@@ -566,12 +617,15 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:va
   <!-- Mobile Topbar -->
   <div class="topbar">
     <div class="topbar-logo" id="logo-tap" onclick="logoTap()">
-      <div class="logo-mark"><img src="https://furosion.com/logo.png" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt="Furosion logo" width="30" height="30" style="width:30px;height:30px;object-fit:contain;border-radius:6px"><span class="logo-fallback">F</span></div>
+      <div class="logo-mark"><img src="https://furosion.com/logo.png" alt="Furosion" width="28" height="28" style="width:28px;height:28px;object-fit:contain;display:block" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><span class="logo-fallback">F</span></div>
       <div class="logo-wordmark">Furosion</div>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
       <div class="sync-dot" id="mobile-sync-dot"></div>
       <div class="event-pill" id="event-pill">Loading...</div>
+      <button class="btn-icon" id="install-topbar-btn" onclick="showInstallPrompt()" style="display:none;color:var(--yellow);border-color:var(--border2)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    </button>
     </div>
   </div>
 
@@ -679,33 +733,38 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:va
      FIREBASE + APP LOGIC
      ════════════════════════════════════ -->
 <script type="module">
+/* ─────────────────────────────────────────────────
+   FUROSION PWA — Firebase-connected JS
+   All onclick attributes use data-* + event delegation
+   to avoid quote-escaping issues entirely
+   ───────────────────────────────────────────────── */
 import { initializeApp }    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import {
   getFirestore, doc, setDoc, updateDoc, deleteDoc,
-  collection, addDoc, onSnapshot, serverTimestamp
+  collection, addDoc, onSnapshot
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js';
 
-/* ── Firebase config ─────────────────────────── */
+/* ── Firebase ── */
 const FB = initializeApp({
-  apiKey:            "AIzaSyBxdm6TkQDfTOTbhxEM56E6vFpI_7z6SC0",
-  authDomain:        "furosion-app.firebaseapp.com",
-  projectId:         "furosion-app",
-  storageBucket:     "furosion-app.firebasestorage.app",
-  messagingSenderId: "1009031199675",
-  appId:             "1:1009031199675:web:1ba90a470d07e42adaa29e"
+  apiKey:            'AIzaSyBxdm6TkQDfTOTbhxEM56E6vFpI_7z6SC0',
+  authDomain:        'furosion-app.firebaseapp.com',
+  projectId:         'furosion-app',
+  storageBucket:     'furosion-app.firebasestorage.app',
+  messagingSenderId: '1009031199675',
+  appId:             '1:1009031199675:web:1ba90a470d07e42adaa29e'
 });
-const db      = getFirestore(FB);
-const VAPID   = 'BClkvsAzuSKexoDPLNCRq4SFY1Ow_vxQIGg3PTwS-OsQGB-B0X0LTX22SWnWLs7X77qyh-c9ZyNqx3x6qhHBcDE';
+const db    = getFirestore(FB);
+const VAPID = 'BClkvsAzuSKexoDPLNCRq4SFY1Ow_vxQIGg3PTwS-OsQGB-B0X0LTX22SWnWLs7X77qyh-c9ZyNqx3x6qhHBcDE';
 
-/* ── Local storage ───────────────────────────── */
-const LS_KEY  = 'furosion_v4';
+/* ── Local storage ── */
+const LS_KEY = 'furosion_v5';
 let local = (() => { try { return JSON.parse(localStorage.getItem(LS_KEY)) || {}; } catch { return {}; } })();
 if (!local.deviceId) local.deviceId = 'DEV_' + Math.random().toString(36).slice(2, 9).toUpperCase();
 const saveLocal = () => localStorage.setItem(LS_KEY, JSON.stringify(local));
 saveLocal();
 
-/* ── Live Firestore state ────────────────────── */
+/* ── Live state ── */
 let FS = {
   event:        { name: 'Furosion', announcement: '', days: 3, pin: '4242', ended: false },
   competitions: {},
@@ -717,108 +776,155 @@ let FS = {
   pendingCodes: {}
 };
 
-/* ── Helpers ─────────────────────────────────── */
-const esc  = s  => s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : '';
-const cap  = s  => s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
-const uid  = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
-const ago  = ms => { const d=Date.now()-ms, m=Math.floor(d/60000), h=Math.floor(m/60); if(m<2)return 'just now'; if(h<1)return m+'m ago'; if(h<24)return h+'h ago'; return Math.floor(h/24)+'d ago'; };
-const fmtT = ms => new Date(ms).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-const fmtD = ms => new Date(ms).toLocaleDateString([], {month:'short', day:'numeric'});
+/* ── Utils ── */
+const esc  = s => s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : '';
+const cap  = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
+const uid  = () => Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4);
+const ago  = ms => { const d=Date.now()-ms, m=Math.floor(d/60000), h=Math.floor(m/60); if(m<2)return'just now';if(h<1)return m+'m ago';if(h<24)return h+'h ago';return Math.floor(h/24)+'d ago'; };
+const fmtT = ms => new Date(ms).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+const fmtD = ms => new Date(ms).toLocaleDateString([],{month:'short',day:'numeric'});
+const el   = id => document.getElementById(id);
+const getMyCode = () => { let h=0; for(const c of local.deviceId){h=((h<<5)-h)+c.charCodeAt(0);h|=0;} return String(Math.abs(h%900000+100000)); };
 
-/* Derive stable 6-digit code from deviceId */
-const getMyCode = () => {
-  let h = 0;
-  for (const c of local.deviceId) { h = ((h << 5) - h) + c.charCodeAt(0); h |= 0; }
-  return String(Math.abs(h % 900000 + 100000));
+/* ── Firestore error helper ── */
+const fbErr = (e, label) => {
+  console.error(label, e);
+  const msg = e && e.code ? e.code : (e && e.message ? e.message : String(e));
+  toast('Error: ' + msg, 'err');
 };
 
-/* ── Sync dot UI ─────────────────────────────── */
-const setSyncStatus = status => {
+/* ── Sync UI ── */
+const setSyncStatus = s => {
   ['mobile-sync-dot','desktop-sync-dot','admin-sync-dot'].forEach(id => {
-    const el = document.getElementById(id); if (!el) return;
-    el.className = 'sync-dot ' + (status === 'live' ? 'live' : status === 'err' ? 'err' : '');
+    const dot = el(id); if (!dot) return;
+    dot.className = 'sync-dot' + (s==='live'?' live':s==='err'?' err':'');
   });
-  const lbl = document.getElementById('desktop-sync-label');
-  if (lbl) lbl.textContent = status === 'live' ? 'Live sync' : status === 'err' ? 'Connection error' : 'Connecting...';
+  const lbl = el('desktop-sync-label');
+  if (lbl) lbl.textContent = s==='live'?'Live sync':s==='err'?'Connection error':'Connecting...';
 };
 
-/* ── Firestore listeners ─────────────────────── */
+/* ═══════════════════════════════════════════════
+   FIRESTORE LISTENERS (real-time)
+   ═══════════════════════════════════════════════ */
 const startListeners = () => {
-  /* Config */
-  onSnapshot(doc(db, 'furosion', 'config'), snap => {
+  onSnapshot(doc(db,'furosion','config'), snap => {
     if (snap.exists()) Object.assign(FS.event, snap.data());
     setSyncStatus('live');
-    handleFestivalState();
-    renderHome();
-    updateEventPill();
-    updateFestivalStatusAdmin();
-  }, () => setSyncStatus('err'));
+    handleFestivalState(); renderHome(); updateEventPill(); updateFestivalStatusAdmin();
+  }, e => { console.error('config listener', e); setSyncStatus('err'); });
 
-  /* Competitions */
-  onSnapshot(collection(db, 'competitions'), snap => {
+  onSnapshot(collection(db,'competitions'), snap => {
     FS.competitions = {};
-    snap.forEach(d => { FS.competitions[d.id] = { id: d.id, ...d.data() }; });
+    snap.forEach(d => { FS.competitions[d.id] = { id:d.id, ...d.data() }; });
     renderVote(); renderHome(); renderAdmComps(); renderAdmVoting(); renderCompetitors(); checkVoteBadge();
-  });
+  }, e => console.error('competitions', e));
 
-  /* Pages */
-  onSnapshot(collection(db, 'pages'), snap => {
+  onSnapshot(collection(db,'pages'), snap => {
     FS.pages = {};
-    snap.forEach(d => { FS.pages[d.id] = { id: d.id, ...d.data() }; });
+    snap.forEach(d => { FS.pages[d.id] = { id:d.id, ...d.data() }; });
     renderInfoPages(); renderAdmPages();
-  });
+  }, e => console.error('pages', e));
 
-  /* Schedule */
-  onSnapshot(collection(db, 'schedule'), snap => {
+  onSnapshot(collection(db,'schedule'), snap => {
     FS.schedule = {};
-    snap.forEach(d => { FS.schedule[d.id] = { id: d.id, ...d.data() }; });
+    snap.forEach(d => { FS.schedule[d.id] = { id:d.id, ...d.data() }; });
     renderSchedule(); renderAdmSchedule();
-  });
+  }, e => console.error('schedule', e));
 
-  /* Staff */
-  onSnapshot(collection(db, 'staff'), snap => {
+  onSnapshot(collection(db,'staff'), snap => {
     FS.staff = {};
-    snap.forEach(d => { FS.staff[d.id] = { id: d.id, ...d.data() }; });
+    snap.forEach(d => { FS.staff[d.id] = { id:d.id, ...d.data() }; });
     renderStaff(); renderAdmStaff();
-  });
+  }, e => console.error('staff', e));
 
-  /* Lost & Found */
-  onSnapshot(collection(db, 'lostFound'), snap => {
+  onSnapshot(collection(db,'lostFound'), snap => {
     FS.lostFound = {};
-    snap.forEach(d => { FS.lostFound[d.id] = { id: d.id, ...d.data() }; });
+    snap.forEach(d => { FS.lostFound[d.id] = { id:d.id, ...d.data() }; });
     renderLostFound(); renderAdmLF();
-  });
+  }, e => console.error('lostFound', e));
 
-  /* Devices */
-  onSnapshot(collection(db, 'devices'), snap => {
+  onSnapshot(collection(db,'devices'), snap => {
     FS.devices = {};
-    snap.forEach(d => { FS.devices[d.id] = { id: d.id, ...d.data() }; });
-    renderAdmDevices();
-    checkDeviceApproval();
-  });
+    snap.forEach(d => { FS.devices[d.id] = { id:d.id, ...d.data() }; });
+    renderAdmDevices(); checkDeviceApproval();
+  }, e => console.error('devices', e));
 
-  /* Pending codes */
-  onSnapshot(collection(db, 'pendingCodes'), snap => {
+  onSnapshot(collection(db,'pendingCodes'), snap => {
     FS.pendingCodes = {};
-    snap.forEach(d => { FS.pendingCodes[d.id] = { id: d.id, ...d.data() }; });
+    snap.forEach(d => { FS.pendingCodes[d.id] = { id:d.id, ...d.data() }; });
     renderAdmDevices();
-  });
+  }, e => console.error('pendingCodes', e));
 };
 
-/* ── Festival state ──────────────────────────── */
-const handleFestivalState = () => {
-  const ended  = FS.event.ended;
-  const isStaff = local.session && (local.session.role === 'staff' || local.session.role === 'admin');
-  const el = document.getElementById('festival-ended');
-  if (ended && !isStaff) {
-    el.classList.add('show');
-    document.getElementById('ended-event-name').textContent = FS.event.name || 'Furosion';
-  } else {
-    el.classList.remove('show');
+/* ═══════════════════════════════════════════════
+   PWA INSTALL PROMPT
+   ═══════════════════════════════════════════════ */
+let deferredInstallPrompt = null;
+
+const isPWA = () =>
+  window.matchMedia('(display-mode: standalone)').matches ||
+  window.navigator.standalone === true ||
+  document.referrer.includes('android-app://');
+
+const isIOS = () => /ipad|iphone|ipod/i.test(navigator.userAgent) && !window.MSStream;
+const isAndroid = () => /android/i.test(navigator.userAgent);
+const isMobile = () => isIOS() || isAndroid() || window.innerWidth < 768;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  if (!isPWA() && isMobile()) setTimeout(showInstallPrompt, 1800);
+});
+
+window.showInstallPrompt = () => {
+  const overlay = el('install-overlay');
+  if (!overlay || overlay.classList.contains('open')) return;
+  // Populate platform-specific instructions
+  const ios     = el('install-ios');
+  const android = el('install-android');
+  const generic = el('install-generic');
+  if (ios) ios.style.display     = isIOS()     ? 'flex' : 'none';
+  if (android) android.style.display = isAndroid() ? 'flex' : 'none';
+  if (generic) generic.style.display = (!isIOS() && !isAndroid()) ? 'flex' : 'none';
+  overlay.classList.add('open');
+};
+
+window.dismissInstall = () => el('install-overlay')?.classList.remove('open');
+
+window.triggerInstall = async () => {
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    const { outcome } = await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    if (outcome === 'accepted') { el('install-overlay')?.classList.remove('open'); toast('Installing Furosion!', 'ok'); }
   }
 };
 
-/* ── Session ─────────────────────────────────── */
+/* ── Show install button in topbar if not PWA ── */
+const checkInstallButton = () => {
+  const btn = el('install-topbar-btn');
+  if (!btn) return;
+  btn.style.display = (!isPWA() && isMobile()) ? 'flex' : 'none';
+};
+
+/* ═══════════════════════════════════════════════
+   SESSION & FESTIVAL
+   ═══════════════════════════════════════════════ */
+const handleFestivalState = () => {
+  const isStaff = local.session && (local.session.role === 'staff' || local.session.role === 'admin');
+  const ended   = FS.event.ended;
+  const fe = el('festival-ended');
+  if (fe) {
+    if (ended && !isStaff) {
+      fe.classList.add('show');
+      const en = el('ended-event-name');
+      if (en) en.textContent = FS.event.name || 'Furosion';
+    } else {
+      fe.classList.remove('show');
+    }
+  }
+};
+
 const checkSession = () => {
   if (!local.session) return;
   const exp = local.session.verifiedAt + (FS.event.days || 3) * 86400000;
@@ -835,205 +941,223 @@ const checkDeviceApproval = () => {
   if (dev && dev.role) {
     local.session = { role: dev.role, verifiedAt: Date.now() };
     saveLocal();
-    renderVerify(); renderHome(); handleFestivalState();
-    toast('You have been verified as ' + cap(dev.role) + '!', 'ok');
+    renderVerify(); renderHome(); handleFestivalState(); checkVoteBadge();
+    toast('Verified as ' + cap(dev.role) + '!', 'ok');
     Object.values(FS.pendingCodes).forEach(c => {
-      if (c.deviceId === local.deviceId) deleteDoc(doc(db, 'pendingCodes', c.id)).catch(() => {});
+      if (c.deviceId === local.deviceId) deleteDoc(doc(db,'pendingCodes',c.id)).catch(() => {});
     });
   }
 };
 
-/* ── Verify screen ───────────────────────────── */
+/* ═══════════════════════════════════════════════
+   RENDER — VERIFY
+   ═══════════════════════════════════════════════ */
 const renderVerify = () => {
   checkSession();
   const myCode = getMyCode();
-  const codeEl = document.getElementById('my-code');
-  if (codeEl) codeEl.textContent = myCode;
-  const idEl = document.getElementById('my-code-id');
-  if (idEl) idEl.textContent = 'Device: ' + local.deviceId;
+  const codeEl = el('my-code');  if (codeEl) codeEl.textContent = myCode;
+  const idEl   = el('my-code-id'); if (idEl) idEl.textContent = 'Device: ' + local.deviceId;
 
-  const unverEl  = document.getElementById('verify-unverified');
-  const verEl    = document.getElementById('verify-verified');
+  const unverEl = el('verify-unverified');
+  const verEl   = el('verify-verified');
 
   if (!local.session) {
-    const alreadyPending = Object.values(FS.pendingCodes).find(c => c.deviceId === local.deviceId);
-    if (!alreadyPending) {
-      addDoc(collection(db, 'pendingCodes'), { deviceId: local.deviceId, code: myCode, ts: Date.now(), verified: false }).catch(() => {});
-    }
     if (unverEl) unverEl.style.display = 'flex';
     if (verEl)   verEl.style.display   = 'none';
+    // Register pending code
+    const already = Object.values(FS.pendingCodes).find(c => c.deviceId === local.deviceId);
+    if (!already) {
+      addDoc(collection(db,'pendingCodes'), { deviceId: local.deviceId, code: myCode, ts: Date.now(), verified: false })
+        .catch(e => console.error('pendingCodes write', e));
+    }
   } else {
     if (unverEl) unverEl.style.display = 'none';
     if (verEl)   verEl.style.display   = 'flex';
-    const roleEl   = document.getElementById('verified-role');
-    const idDisplayEl  = document.getElementById('verified-id');
-    const expEl    = document.getElementById('verified-expiry');
-    if (roleEl)   roleEl.textContent   = cap(local.session.role);
-    if (idDisplayEl) idDisplayEl.textContent = local.deviceId;
+    const roleEl = el('verified-role');      if (roleEl)  roleEl.textContent  = cap(local.session.role);
+    const idDisp = el('verified-id');        if (idDisp)  idDisp.textContent  = local.deviceId;
+    const expEl  = el('verified-expiry');
     if (expEl) {
       const exp = new Date(local.session.verifiedAt + (FS.event.days || 3) * 86400000);
-      expEl.textContent = 'Expires: ' + exp.toLocaleDateString() + ' ' + exp.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      expEl.textContent = 'Expires: ' + exp.toLocaleDateString() + ' ' + exp.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
     }
   }
 };
 
-/* ── Home ────────────────────────────────────── */
+/* ═══════════════════════════════════════════════
+   RENDER — HOME
+   ═══════════════════════════════════════════════ */
 const renderHome = () => {
   checkSession();
-  const role = local.session ? cap(local.session.role) : 'Guest';
-  const setT = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-  const setH = (id, v) => { const el = document.getElementById(id); if (el) el.innerHTML  = v; };
-
-  setT('home-role',       role);
+  const setT = (id, v) => { const e=el(id); if(e) e.textContent=v; };
+  const setH = (id, v) => { const e=el(id); if(e) e.innerHTML=v; };
+  setT('home-role',       local.session ? cap(local.session.role) : 'Guest');
   setT('home-greeting',   local.session ? 'Attending as' : 'Welcome to');
   setT('home-event-name', FS.event.name || 'Furosion');
-  setT('home-sub',        local.session ? 'Your device is verified for this event' : 'Show your entry code to a staff member to get verified');
+  setT('home-sub', local.session ? 'Your device is verified for this event' : 'Show your entry code to a staff member to get verified');
 
   if (local.session) {
-    const exp  = local.session.verifiedAt + (FS.event.days || 3) * 86400000;
-    const hrs  = Math.max(0, Math.floor((exp - Date.now()) / 3600000));
-    const lbl  = hrs > 24 ? Math.floor(hrs / 24) + 'd left' : hrs + 'h left';
-    setH('home-session', '<span style="color:var(--green)">' + lbl + '</span>');
+    const hrs = Math.max(0, Math.floor((local.session.verifiedAt + (FS.event.days||3)*86400000 - Date.now()) / 3600000));
+    setH('home-session', '<span style="color:var(--green)">' + (hrs>24?Math.floor(hrs/24)+'d left':hrs+'h left') + '</span>');
   } else {
     setH('home-session', '<span style="color:var(--red)">Unverified</span>');
   }
 
-  const openComps = Object.values(FS.competitions).filter(c => c.state === 'open');
-  setT('home-open-count', openComps.length);
-  setT('home-vote-sub',   openComps.length > 0 ? 'Tap to vote now' : 'No competitions open right now');
+  const open = Object.values(FS.competitions).filter(c=>c.state==='open').length;
+  setT('home-open-count', open);
+  setT('home-vote-sub', open>0?'Tap to vote now':'No competitions open right now');
 
-  const az = document.getElementById('announcement-zone');
-  if (az) {
-    az.innerHTML = FS.event.announcement
-      ? '<div class="announcement-bar"><div style="font-size:16px;flex-shrink:0;margin-top:1px">&#x1F4E2;</div><div class="ann-text">' + esc(FS.event.announcement) + '</div></div>'
-      : '';
-  }
+  const az = el('announcement-zone');
+  if (az) az.innerHTML = FS.event.announcement
+    ? '<div class="announcement-bar"><div style="font-size:16px;flex-shrink:0">&#x1F4E2;</div><div class="ann-text">' + esc(FS.event.announcement) + '</div></div>'
+    : '';
 
-  const mv = document.getElementById('home-my-votes');
+  const mv = el('home-my-votes');
   if (mv) {
-    const votes   = local.votes || {};
-    const entries = Object.entries(votes);
-    if (!entries.length) {
-      mv.innerHTML = '<div style="font-size:11px;font-family:var(--font-mono);color:var(--text3);padding:8px 0">No votes cast yet</div>';
-    } else {
-      mv.innerHTML = entries.map(([key, candId]) => {
-        const compId = key.split('::')[0];
-        const cat    = key.split('::')[1];
-        const comp   = FS.competitions[compId];
-        const cand   = comp ? (comp.candidates || []).find(x => x.id === candId) : null;
-        const nm     = cand ? esc(cand.name) : 'Unknown';
-        return '<div style="display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm)">'
-          + '<div style="font-size:10px;font-family:var(--font-mono);color:var(--text3);min-width:68px">' + esc(cat) + '</div>'
-          + '<div style="font-size:13px;font-weight:600">' + nm + '</div>'
-          + '<span class="badge badge-yellow" style="margin-left:auto">voted</span></div>';
-      }).join('');
-    }
+    const entries = Object.entries(local.votes || {});
+    mv.innerHTML = entries.length ? entries.map(([key, candId]) => {
+      const [compId, cat] = key.split('::');
+      const comp = FS.competitions[compId];
+      const cand = comp ? (comp.candidates||[]).find(x=>x.id===candId) : null;
+      return '<div style="display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm)">'
+        + '<div style="font-size:10px;font-family:var(--font-mono);color:var(--text3);min-width:68px">' + esc(cat) + '</div>'
+        + '<div style="font-size:13px;font-weight:600">' + (cand?esc(cand.name):'Unknown') + '</div>'
+        + '<span class="badge badge-yellow" style="margin-left:auto">voted</span></div>';
+    }).join('') : '<div style="font-size:11px;font-family:var(--font-mono);color:var(--text3);padding:8px 0">No votes cast yet</div>';
   }
   updateEventPill();
 };
 
-const updateEventPill = () => {
-  const el = document.getElementById('event-pill');
-  if (el) el.textContent = FS.event.name || 'Furosion';
-};
+const updateEventPill = () => { const e=el('event-pill'); if(e) e.textContent=FS.event.name||'Furosion'; };
 
-/* ── Vote screen ─────────────────────────────── */
+/* ═══════════════════════════════════════════════
+   RENDER — VOTE
+   ═══════════════════════════════════════════════ */
 const renderVote = () => {
-  const el = document.getElementById('vote-content');
-  if (!el) return;
+  const container = el('vote-content'); if (!container) return;
   const comps = Object.values(FS.competitions);
   if (!comps.length) {
-    el.innerHTML = '<div class="empty" style="padding-top:60px"><div class="empty-text">No competitions yet</div><div class="empty-sub">Check back soon</div></div>';
+    container.innerHTML = '<div class="empty" style="padding-top:60px"><div class="empty-text">No competitions yet</div><div class="empty-sub">Check back soon</div></div>';
     return;
   }
-  const stateLabel = { closed: 'Voting Closed', open: 'Voting Open', revealed: 'Results' };
-  const stateBadge = { closed: 'badge-dim',     open: 'badge-green', revealed: 'badge-yellow' };
+  const frag = document.createDocumentFragment();
+  const stateLabel = { closed:'Voting Closed', open:'Voting Open', revealed:'Results' };
+  const stateBadge = { closed:'badge-dim', open:'badge-green', revealed:'badge-yellow' };
 
-  el.innerHTML = comps.map(comp => {
+  comps.forEach(comp => {
     const st      = comp.state || 'closed';
-    const total   = (comp.candidates || []).reduce((s, x) => s + (x.votes || 0), 0);
+    const total   = (comp.candidates||[]).reduce((s,x)=>s+(x.votes||0),0);
     const myKey   = comp.id + '::' + comp.category;
-    const myVote  = (local.votes || {})[myKey];
-    const canVote = st === 'open' && !!local.session;
-    const sorted  = [...(comp.candidates || [])].sort((a, b) => st === 'revealed' ? (b.votes || 0) - (a.votes || 0) : 0);
+    const myVote  = (local.votes||{})[myKey];
+    const canVote = st==='open' && !!local.session;
+    const sorted  = [...(comp.candidates||[])].sort((a,b)=>st==='revealed'?(b.votes||0)-(a.votes||0):0);
 
-    const rows = sorted.map(c => {
-      const pct    = total > 0 ? Math.round((c.votes || 0) / total * 100) : 0;
-      const isWin  = st === 'revealed' && sorted[0] && c.id === sorted[0].id && total > 0;
-      const isMine = myVote === c.id;
-      const rowCls = isMine ? 'my-vote' : (isWin ? 'winner-row' : '');
-      const barCls = isWin  ? 'winner-bar' : '';
-      const checkCls = isMine ? 'checked' : '';
-      const trophy = isWin ? ' &#x1F3C6;' : '';
-      const onclk  = canVote ? 'castVote("' + comp.id + '","' + comp.category + '","' + c.id + '")' : '';
-      const cursor = canVote ? '' : 'cursor:default';
-      const showBar = (st === 'revealed' || isMine) ? '<div class="candidate-bar-wrap"><div class="candidate-bar ' + barCls + '" style="width:' + pct + '%"></div></div>' : '';
-      const pctDiv  = st === 'revealed' ? '<div class="vote-pct">' + pct + '%</div>' : '';
-      const checkDiv = canVote ? '<div class="vote-check ' + checkCls + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>' : '';
-      const descDiv  = c.desc ? '<div class="candidate-desc">' + esc(c.desc) + '</div>' : '';
+    const block = document.createElement('div');
+    block.className = 'competition-block fade-in';
 
-      return '<div class="candidate-row ' + rowCls + '" onclick="' + onclk + '" style="' + cursor + '">'
-        + '<div style="flex:1;min-width:0"><div class="candidate-name">' + esc(c.name) + trophy + '</div>' + descDiv + showBar + '</div>'
-        + '<div style="display:flex;align-items:center;gap:9px">' + pctDiv + checkDiv + '</div></div>';
-    }).join('');
+    // Header
+    const header = document.createElement('div'); header.className = 'comp-header';
+    header.innerHTML = '<div><div class="comp-cat">' + esc(comp.category) + '</div><div class="comp-name">' + esc(comp.name) + '</div></div>'
+      + '<span class="badge ' + (stateBadge[st]||'badge-dim') + '">' + (stateLabel[st]||'Closed') + '</span>';
+    block.appendChild(header);
 
-    const noVoteWarn = (!local.session && st === 'open')
-      ? '<div style="font-size:12px;color:var(--orange);font-family:var(--font-mono);margin-bottom:8px">Verify your device to vote</div>'
-      : '';
-    const totalLine = (st === 'revealed' && total)
-      ? '<div style="font-size:10px;font-family:var(--font-mono);color:var(--text3);margin-top:7px;text-align:right">' + total + ' total votes</div>'
-      : '';
-    const emptyRow = rows ? '' : '<div class="empty-text" style="padding:12px">No candidates yet</div>';
+    if (!local.session && st==='open') {
+      const warn = document.createElement('div');
+      warn.style.cssText = 'font-size:12px;color:var(--orange);font-family:var(--font-mono);margin-bottom:8px';
+      warn.textContent = 'Verify your device to vote';
+      block.appendChild(warn);
+    }
 
-    return '<div class="competition-block fade-in">'
-      + '<div class="comp-header">'
-      + '<div><div class="comp-cat">' + esc(comp.category) + '</div><div class="comp-name">' + esc(comp.name) + '</div></div>'
-      + '<span class="badge ' + stateBadge[st] + '">' + stateLabel[st] + '</span></div>'
-      + noVoteWarn
-      + '<div class="candidate-list">' + (rows || emptyRow) + '</div>'
-      + totalLine + '</div>';
-  }).join('');
+    const list = document.createElement('div'); list.className = 'candidate-list';
+
+    if (!sorted.length) {
+      list.innerHTML = '<div class="empty-text" style="padding:12px">No candidates yet</div>';
+    } else {
+      sorted.forEach(c => {
+        const pct    = total>0 ? Math.round((c.votes||0)/total*100) : 0;
+        const isWin  = st==='revealed' && sorted[0]?.id===c.id && total>0;
+        const isMine = myVote===c.id;
+
+        const row = document.createElement('div');
+        row.className = 'candidate-row' + (isMine?' my-vote':isWin?' winner-row':'');
+        if (canVote && !myVote) {
+          row.style.cursor = 'pointer';
+          row.dataset.action   = 'vote';
+          row.dataset.compId   = comp.id;
+          row.dataset.category = comp.category;
+          row.dataset.candId   = c.id;
+        } else {
+          row.style.cursor = 'default';
+        }
+
+        let inner = '<div style="flex:1;min-width:0">'
+          + '<div class="candidate-name">' + esc(c.name) + (isWin?' &#x1F3C6;':'') + '</div>'
+          + (c.desc ? '<div class="candidate-desc">' + esc(c.desc) + '</div>' : '');
+        if (st==='revealed' || isMine) {
+          inner += '<div class="candidate-bar-wrap"><div class="candidate-bar' + (isWin?' winner-bar':'') + '" style="width:' + pct + '%"></div></div>';
+        }
+        inner += '</div><div style="display:flex;align-items:center;gap:9px">';
+        if (st==='revealed') inner += '<div class="vote-pct">' + pct + '%</div>';
+        if (canVote) {
+          inner += '<div class="vote-check' + (isMine?' checked':'') + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>';
+        }
+        inner += '</div>';
+        row.innerHTML = inner;
+        list.appendChild(row);
+      });
+    }
+    block.appendChild(list);
+
+    if (st==='revealed' && total) {
+      const tot = document.createElement('div');
+      tot.style.cssText = 'font-size:10px;font-family:var(--font-mono);color:var(--text3);margin-top:7px;text-align:right';
+      tot.textContent = total + ' total votes';
+      block.appendChild(tot);
+    }
+    frag.appendChild(block);
+  });
+
+  container.innerHTML = '';
+  container.appendChild(frag);
 };
 
-window.castVote = async (compId, cat, candId) => {
+const checkVoteBadge = () => {
+  const open    = Object.values(FS.competitions).filter(c=>c.state==='open');
+  const unvoted = !!local.session && open.some(c=>!(local.votes||{})[c.id+'::'+c.category]);
+  el('mob-vote-badge')?.classList.toggle('show', unvoted);
+  el('side-vote-badge')?.classList.toggle('show', unvoted);
+};
+
+/* ── Vote action ── */
+const castVote = async (compId, category, candId) => {
   if (!local.session) { toast('Verify your device first', 'err'); return; }
-  const key  = compId + '::' + cat;
-  if ((local.votes || {})[key]) { toast('Already voted in this category', 'err'); return; }
+  const key  = compId + '::' + category;
+  if ((local.votes||{})[key]) { toast('Already voted in this category', 'err'); return; }
   const comp = FS.competitions[compId];
-  if (!comp || comp.state !== 'open') { toast('Voting not open', 'err'); return; }
-  const cand = (comp.candidates || []).find(c => c.id === candId);
+  if (!comp || comp.state !== 'open') { toast('Voting is not open', 'err'); return; }
+  const cand = (comp.candidates||[]).find(c=>c.id===candId);
   if (!cand) return;
-  const newCands = comp.candidates.map(c => c.id === candId ? { ...c, votes: (c.votes || 0) + 1 } : c);
+  const newCands = comp.candidates.map(c => c.id===candId ? { ...c, votes:(c.votes||0)+1 } : c);
   try {
-    await updateDoc(doc(db, 'competitions', compId), { candidates: newCands });
+    await updateDoc(doc(db,'competitions',compId), { candidates: newCands });
     if (!local.votes) local.votes = {};
     local.votes[key] = candId;
     saveLocal();
     renderVote(); renderHome(); checkVoteBadge();
     toast('Voted for ' + cand.name + '!', 'ok');
-  } catch (e) { toast('Could not save vote — check connection', 'err'); }
+  } catch (e) { fbErr(e, 'castVote'); }
 };
 
-const checkVoteBadge = () => {
-  const open    = Object.values(FS.competitions).filter(c => c.state === 'open');
-  const unvoted = !!local.session && open.some(c => !(local.votes || {})[c.id + '::' + c.category]);
-  document.getElementById('mob-vote-badge')?.classList.toggle('show', unvoted);
-  document.getElementById('side-vote-badge')?.classList.toggle('show', unvoted);
-};
-
-/* ── Info pages ──────────────────────────────── */
+/* ═══════════════════════════════════════════════
+   RENDER — INFO PAGES
+   ═══════════════════════════════════════════════ */
 const renderInfoPages = () => {
-  const list = document.getElementById('info-page-list');
-  if (!list) return;
-  const pages = Object.values(FS.pages).sort((a, b) => (a.order || 0) - (b.order || 0));
-  if (!pages.length) {
-    list.innerHTML = '<div class="empty" style="padding-top:60px"><div class="empty-text">No info pages yet</div></div>';
-    return;
-  }
+  const list = el('info-page-list'); if (!list) return;
+  const pages = Object.values(FS.pages).sort((a,b)=>(a.order||0)-(b.order||0));
+  if (!pages.length) { list.innerHTML = '<div class="empty" style="padding-top:60px"><div class="empty-text">No info pages yet</div></div>'; return; }
   list.innerHTML = '<div class="info-list">' + pages.map(p => {
-    const bg   = esc(p.color || 'rgba(232,200,64,0.1)');
-    const icon = esc(p.icon) || '&#x1F4C4;';
-    return '<div class="info-page-item" onclick="openInfoPage(' + JSON.stringify(p.id) + ')">'
+    const bg = esc(p.color || 'rgba(232,200,64,0.1)');
+    const icon = p.icon ? esc(p.icon) : '&#x1F4C4;';
+    return '<div class="info-page-item" data-action="open-page" data-id="' + esc(p.id) + '">'
       + '<div class="info-icon" style="background:' + bg + '">' + icon + '</div>'
       + '<div style="flex:1"><div style="font-size:15px;font-weight:600">' + esc(p.title) + '</div></div>'
       + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>'
@@ -1043,718 +1167,801 @@ const renderInfoPages = () => {
 
 window.openInfoPage = id => {
   const p = FS.pages[id]; if (!p) return;
-  document.getElementById('info-page-list').style.display  = 'none';
-  document.getElementById('info-content-view').classList.add('show');
-  document.getElementById('info-content-body').innerHTML   = marked.parse(p.content || '');
+  el('info-page-list').style.display = 'none';
+  el('info-content-view').classList.add('show');
+  el('info-content-body').innerHTML = marked.parse(p.content || '');
 };
 window.backToInfoList = () => {
-  document.getElementById('info-page-list').style.display = '';
-  document.getElementById('info-content-view').classList.remove('show');
+  el('info-page-list').style.display = '';
+  el('info-content-view').classList.remove('show');
 };
 
-/* ── Schedule ────────────────────────────────── */
+/* ═══════════════════════════════════════════════
+   RENDER — SCHEDULE
+   ═══════════════════════════════════════════════ */
 const renderSchedule = () => {
-  const el = document.getElementById('schedule-content');
-  if (!el) return;
-  const items = Object.values(FS.schedule).sort((a, b) => a.datetime - b.datetime);
-  if (!items.length) { el.innerHTML = '<div class="empty" style="padding-top:40px"><div class="empty-text">No schedule items yet</div></div>'; return; }
+  const container = el('schedule-content'); if (!container) return;
+  const items = Object.values(FS.schedule).sort((a,b)=>a.datetime-b.datetime);
+  if (!items.length) { container.innerHTML = '<div class="empty" style="padding-top:40px"><div class="empty-text">No schedule items yet</div></div>'; return; }
   const now = Date.now();
-  el.innerHTML = '<div class="schedule-list">' + items.map((s, i) => {
-    const next  = items[i + 1];
-    const isNow = now >= s.datetime && (next ? now < next.datetime : true);
-    const isPast = now > s.datetime && !isNow;
-    const dotCls = isNow ? 'now' : (isPast ? 'past' : '');
-    const titleStyle = isPast ? 'opacity:0.5' : (isNow ? 'color:var(--yellow)' : '');
-    const nowBadge   = isNow ? ' <span style="font-size:10px;font-family:var(--font-mono)">NOW</span>' : '';
-    const connector  = i < items.length - 1 ? '<div class="sched-connector"></div>' : '';
-    const descDiv    = s.desc     ? '<div class="sched-desc" style="' + (isPast ? 'opacity:0.4' : '') + '">' + esc(s.desc) + '</div>' : '';
-    const locDiv     = s.location ? '<div class="sched-location">&#x1F4CD; ' + esc(s.location) + '</div>' : '';
+  container.innerHTML = '<div class="schedule-list">' + items.map((s,i) => {
+    const next  = items[i+1];
+    const isNow  = now>=s.datetime && (next?now<next.datetime:true);
+    const isPast = now>s.datetime && !isNow;
+    const conn   = i<items.length-1 ? '<div class="sched-connector"></div>' : '';
+    const desc   = s.desc ? '<div class="sched-desc" style="' + (isPast?'opacity:0.4':'') + '">' + esc(s.desc) + '</div>' : '';
+    const loc    = s.location ? '<div class="sched-location">&#x1F4CD; ' + esc(s.location) + '</div>' : '';
+    const now_badge = isNow ? ' <span style="font-size:10px;font-family:var(--font-mono)">[NOW]</span>' : '';
     return '<div class="schedule-item">'
       + '<div class="sched-time">' + fmtT(s.datetime) + '<br><span style="font-size:9px">' + fmtD(s.datetime) + '</span></div>'
-      + '<div class="sched-line"><div class="sched-dot ' + dotCls + '"></div>' + connector + '</div>'
-      + '<div style="flex:1;min-width:0"><div class="sched-title" style="' + titleStyle + '">' + esc(s.title) + nowBadge + '</div>' + descDiv + locDiv + '</div>'
-      + '</div>';
+      + '<div class="sched-line"><div class="sched-dot ' + (isNow?'now':isPast?'past':'') + '"></div>' + conn + '</div>'
+      + '<div style="flex:1;min-width:0"><div class="sched-title" style="' + (isNow?'color:var(--yellow)':isPast?'opacity:0.5':'') + '">' + esc(s.title) + now_badge + '</div>' + desc + loc + '</div></div>';
   }).join('') + '</div>';
 };
 
-/* ── Staff ───────────────────────────────────── */
+/* ═══════════════════════════════════════════════
+   RENDER — STAFF
+   ═══════════════════════════════════════════════ */
 const renderStaff = () => {
-  const el = document.getElementById('staff-content');
-  if (!el) return;
+  const container = el('staff-content'); if (!container) return;
   const staff = Object.values(FS.staff);
-  if (!staff.length) { el.innerHTML = '<div class="empty" style="padding-top:40px"><div class="empty-text">No staff listed yet</div></div>'; return; }
-  const statusLabel = { online: 'On shift', break: 'On break', offline: 'Off duty' };
-  const statusColor = { online: 'var(--green)', break: 'var(--orange)', offline: 'var(--text3)' };
-  el.innerHTML = '<div class="staff-grid">' + staff.map(s => {
-    const st     = s.status || 'online';
-    const col    = esc(s.color || '#1a1800');
-    const avatar = esc(s.avatar || '&#x1F464;');
-    const anim   = st === 'online' ? 'animation:pulse 2s infinite' : '';
-    const locDiv = s.location ? '<div style="font-size:11px;font-family:var(--font-mono);color:var(--text3)">&#x1F4CD; ' + esc(s.location) + '</div>' : '';
+  if (!staff.length) { container.innerHTML = '<div class="empty" style="padding-top:40px"><div class="empty-text">No staff listed yet</div></div>'; return; }
+  const statusLabel = { online:'On shift', break:'On break', offline:'Off duty' };
+  const statusColor = { online:'var(--green)', break:'var(--orange)', offline:'var(--text3)' };
+  container.innerHTML = '<div class="staff-grid">' + staff.map(s => {
+    const st  = s.status || 'online';
+    const anim = st==='online' ? 'animation:pulse 2s infinite' : '';
     return '<div class="staff-card">'
       + '<div style="display:flex;align-items:center;gap:9px">'
-      + '<div class="staff-avatar" style="background:' + col + '">' + avatar + '</div>'
+      + '<div class="staff-avatar" style="background:' + esc(s.color||'#1a1800') + '">' + esc(s.avatar||'&#x1F464;') + '</div>'
       + '<div><div style="font-size:14px;font-weight:600">' + esc(s.name) + '</div>'
-      + '<div style="font-size:10px;font-family:var(--font-mono);color:var(--text2)">' + esc(s.role || '') + '</div></div></div>'
-      + locDiv
+      + '<div style="font-size:10px;font-family:var(--font-mono);color:var(--text2)">' + esc(s.role||'') + '</div></div></div>'
+      + (s.location?'<div style="font-size:11px;font-family:var(--font-mono);color:var(--text3)">&#x1F4CD; '+esc(s.location)+'</div>':'')
       + '<div style="display:flex;align-items:center;gap:5px;font-size:10px;font-family:var(--font-mono);color:' + statusColor[st] + '">'
       + '<span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;' + anim + '"></span>'
       + statusLabel[st] + '</div></div>';
   }).join('') + '</div>';
 };
 
-/* ── Competitors ─────────────────────────────── */
+/* ═══════════════════════════════════════════════
+   RENDER — COMPETITORS
+   ═══════════════════════════════════════════════ */
 const BCOLORS = ['#1a0f00','#0a0f1a','#0a1a0f','#1a0a1a','#1a1500','#001a1a'];
 const renderCompetitors = () => {
-  const el = document.getElementById('competitors-content');
-  if (!el) return;
+  const container = el('competitors-content'); if (!container) return;
   const all = [];
   Object.values(FS.competitions).forEach(comp => {
-    (comp.candidates || []).forEach(c => {
-      if (!all.find(x => x.name === c.name)) all.push({ ...c, competition: comp.name, category: comp.category, compId: comp.id });
+    (comp.candidates||[]).forEach(c => {
+      if (!all.find(x=>x.candId===c.id)) all.push({ ...c, candId:c.id, competition:comp.name, category:comp.category, compId:comp.id });
     });
   });
-  if (!all.length) { el.innerHTML = '<div class="empty" style="padding-top:40px"><div class="empty-text">No competitors yet</div></div>'; return; }
-  el.innerHTML = '<div class="competitor-grid">' + all.map((c, i) => {
-    const initials = c.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-    const bg       = BCOLORS[i % BCOLORS.length];
-    const descDiv  = c.desc ? '<div style="font-size:12px;color:var(--text2);margin-top:5px;line-height:1.5">' + esc(c.desc) + '</div>' : '';
-    return '<div class="competitor-card" onclick="showCompetitor(' + JSON.stringify(c.compId) + ',' + JSON.stringify(c.id) + ')">'
-      + '<div class="competitor-banner" style="background:' + bg + '"><span style="color:var(--yellow)">' + initials + '</span></div>'
-      + '<div class="competitor-body">'
-      + '<div style="font-size:14px;font-weight:700">' + esc(c.name) + '</div>'
+  if (!all.length) { container.innerHTML = '<div class="empty" style="padding-top:40px"><div class="empty-text">No competitors yet</div></div>'; return; }
+  container.innerHTML = '<div class="competitor-grid">' + all.map((c,i) => {
+    const initials = c.name.split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase();
+    return '<div class="competitor-card" data-action="show-competitor" data-comp-id="' + esc(c.compId) + '" data-cand-id="' + esc(c.candId) + '">'
+      + '<div class="competitor-banner" style="background:' + BCOLORS[i%BCOLORS.length] + '"><span style="color:var(--yellow)">' + initials + '</span></div>'
+      + '<div class="competitor-body"><div style="font-size:14px;font-weight:700">' + esc(c.name) + '</div>'
       + '<div style="font-size:10px;font-family:var(--font-mono);color:var(--text3);margin-top:2px">' + esc(c.category) + '</div>'
-      + descDiv + '</div></div>';
+      + (c.desc?'<div style="font-size:12px;color:var(--text2);margin-top:5px;line-height:1.5">'+esc(c.desc)+'</div>':'')
+      + '</div></div>';
   }).join('') + '</div>';
 };
 
 window.showCompetitor = (compId, candId) => {
-  const comp = FS.competitions[compId];
-  const cand = comp ? (comp.candidates || []).find(c => c.id === candId) : null;
-  if (!cand) return;
-  document.getElementById('competitors-content').style.display = 'none';
-  document.getElementById('competitor-detail').classList.add('show');
-  const initials = cand.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-  const total    = (comp.candidates || []).reduce((s, x) => s + (x.votes || 0), 0);
-  const pct      = total > 0 ? Math.round((cand.votes || 0) / total * 100) : 0;
-  const myKey    = comp.id + '::' + comp.category;
-  const myVote   = (local.votes || {})[myKey];
-  const showVote = comp.state === 'revealed' || myVote === cand.id;
-  const canVote  = comp.state === 'open' && !!local.session && !myVote;
-  const voteShareDiv = showVote
-    ? '<div style="margin-top:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px">'
-      + '<div class="card-label">Vote Share</div>'
+  const comp = FS.competitions[compId]; if (!comp) return;
+  const cand = (comp.candidates||[]).find(c=>c.id===candId); if (!cand) return;
+  el('competitors-content').style.display = 'none';
+  el('competitor-detail').classList.add('show');
+  const initials = cand.name.split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase();
+  const total    = (comp.candidates||[]).reduce((s,x)=>s+(x.votes||0),0);
+  const pct      = total>0?Math.round((cand.votes||0)/total*100):0;
+  const myKey    = comp.id+'::'+comp.category;
+  const myVote   = (local.votes||{})[myKey];
+  const showData = comp.state==='revealed' || myVote===cand.id;
+  const canVote  = comp.state==='open' && !!local.session && !myVote;
+  const detailEl = el('competitor-detail-body');
+  detailEl.innerHTML = '';
+
+  const banner = document.createElement('div');
+  banner.style.cssText = 'height:110px;background:#1a1500;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:52px;font-weight:900;color:var(--yellow);margin-bottom:4px';
+  banner.textContent = initials;
+  detailEl.appendChild(banner);
+
+  const title = document.createElement('div');
+  title.style.cssText = 'font-family:var(--font-display);font-size:26px;font-weight:900';
+  title.textContent = cand.name;
+  detailEl.appendChild(title);
+
+  const badges = document.createElement('div');
+  badges.style.cssText = 'margin-top:8px;display:flex;gap:7px;flex-wrap:wrap';
+  badges.innerHTML = '<span class="badge badge-yellow">' + esc(comp.category) + '</span><span class="badge badge-dim">' + esc(comp.name) + '</span>';
+  detailEl.appendChild(badges);
+
+  if (cand.desc) {
+    const d = document.createElement('p');
+    d.style.cssText = 'font-size:14px;color:var(--text2);line-height:1.7;margin-top:13px';
+    d.textContent = cand.desc;
+    detailEl.appendChild(d);
+  }
+  if (showData) {
+    const vs = document.createElement('div');
+    vs.style.cssText = 'margin-top:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px';
+    vs.innerHTML = '<div class="card-label">Vote Share</div>'
       + '<div style="font-family:var(--font-display);font-size:34px;font-weight:900;color:var(--yellow)">' + pct + '%</div>'
       + '<div class="candidate-bar-wrap" style="margin-top:7px"><div class="candidate-bar" style="width:' + pct + '%"></div></div>'
-      + '<div style="font-size:10px;font-family:var(--font-mono);color:var(--text3);margin-top:5px">' + (cand.votes || 0) + ' of ' + total + ' votes</div></div>'
-    : '';
-  const voteBtnDiv = canVote
-    ? '<button class="btn btn-yellow" style="margin-top:14px" onclick="castVote(' + JSON.stringify(comp.id) + ',' + JSON.stringify(comp.category) + ',' + JSON.stringify(cand.id) + ');backToCompetitorList()">Vote for ' + esc(cand.name) + '</button>'
-    : '';
-  const descDiv = cand.desc ? '<p style="font-size:14px;color:var(--text2);line-height:1.7;margin-top:13px">' + esc(cand.desc) + '</p>' : '';
-  document.getElementById('competitor-detail-body').innerHTML =
-    '<div style="height:110px;background:#1a1500;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:52px;font-weight:900;color:var(--yellow);margin-bottom:4px">' + initials + '</div>'
-    + '<div style="font-family:var(--font-display);font-size:26px;font-weight:900">' + esc(cand.name) + '</div>'
-    + '<div style="margin-top:8px;display:flex;gap:7px;flex-wrap:wrap"><span class="badge badge-yellow">' + esc(comp.category) + '</span><span class="badge badge-dim">' + esc(comp.name) + '</span></div>'
-    + descDiv + voteShareDiv + voteBtnDiv;
-};
-window.backToCompetitorList = () => {
-  document.getElementById('competitors-content').style.display = '';
-  document.getElementById('competitor-detail').classList.remove('show');
+      + '<div style="font-size:10px;font-family:var(--font-mono);color:var(--text3);margin-top:5px">' + (cand.votes||0) + ' of ' + total + ' votes</div>';
+    detailEl.appendChild(vs);
+  }
+  if (canVote) {
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-yellow';
+    btn.style.marginTop = '14px';
+    btn.textContent = 'Vote for ' + cand.name;
+    btn.dataset.action   = 'vote-from-detail';
+    btn.dataset.compId   = comp.id;
+    btn.dataset.category = comp.category;
+    btn.dataset.candId   = cand.id;
+    detailEl.appendChild(btn);
+  }
 };
 
-/* ── Lost & Found ────────────────────────────── */
+window.backToCompetitorList = () => {
+  el('competitors-content').style.display = '';
+  el('competitor-detail').classList.remove('show');
+};
+
+/* ═══════════════════════════════════════════════
+   RENDER — LOST & FOUND
+   ═══════════════════════════════════════════════ */
 const renderLostFound = () => {
-  const el = document.getElementById('lf-content');
-  if (!el) return;
-  const items = Object.values(FS.lostFound).sort((a, b) => b.ts - a.ts);
-  if (!items.length) {
-    el.innerHTML = '<div class="empty" style="padding-top:40px"><div class="empty-text">Nothing reported yet</div></div>';
-    return;
-  }
-  el.innerHTML = '<div class="lf-grid">' + items.map(item => {
-    const opacity   = item.claimed ? 'opacity:0.5' : '';
+  const container = el('lf-content'); if (!container) return;
+  const items = Object.values(FS.lostFound).sort((a,b)=>b.ts-a.ts);
+  if (!items.length) { container.innerHTML = '<div class="empty" style="padding-top:40px"><div class="empty-text">Nothing reported yet</div></div>'; return; }
+  container.innerHTML = '<div class="lf-grid">' + items.map(item => {
+    const opacity  = item.claimed ? 'opacity:0.5' : '';
     const statusDiv = item.claimed
       ? '<div style="font-size:10px;font-family:var(--font-mono);color:var(--green)">&#x2713; Claimed</div>'
       : '<div style="font-size:10px;font-family:var(--font-mono);color:var(--yellow)">At Registration</div>';
-    const descDiv = item.desc ? '<div style="font-size:12px;color:var(--text2);margin-top:3px;line-height:1.5">' + esc(item.desc) + '</div>' : '';
     return '<div class="lf-item" style="' + opacity + '">'
-      + '<div class="lf-emoji">' + esc(item.emoji || '&#x2753;') + '</div>'
-      + '<div style="flex:1"><div style="font-size:15px;font-weight:600">' + esc(item.title) + '</div>'
-      + descDiv
+      + '<div class="lf-emoji">' + esc(item.emoji||'&#x2753;') + '</div>'
+      + '<div style="flex:1">'
+      + '<div style="font-size:15px;font-weight:600">' + esc(item.title) + '</div>'
+      + (item.desc?'<div style="font-size:12px;color:var(--text2);margin-top:3px;line-height:1.5">'+esc(item.desc)+'</div>':'')
       + '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:7px">'
       + '<div style="font-size:10px;font-family:var(--font-mono);color:var(--text3)">' + ago(item.ts) + '</div>'
       + statusDiv + '</div></div></div>';
   }).join('') + '</div>';
 };
 
-/* ══════════════════════════════════════════════
-   ADMIN — all writes go to Firestore
-   ══════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════
+   ADMIN — ALL WRITES
+   ═══════════════════════════════════════════════ */
 
 /* EVENT */
 const loadAdminEvent = () => {
-  const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
-  set('adm-event-name',  FS.event.name || '');
-  set('adm-announcement', FS.event.announcement || '');
-  set('adm-days',        FS.event.days || 3);
+  const s = (id, v) => { const e=el(id); if(e) e.value=v; };
+  s('adm-event-name',   FS.event.name||'');
+  s('adm-announcement', FS.event.announcement||'');
+  s('adm-days',         FS.event.days||3);
   updateFestivalStatusAdmin();
 };
 
 const updateFestivalStatusAdmin = () => {
-  const el = document.getElementById('festival-status-adm');
-  if (el) el.textContent = 'Status: ' + (FS.event.ended ? 'ENDED — attendees see thank-you screen' : 'ACTIVE — all attendees have access');
+  const e = el('festival-status-adm');
+  if (e) e.textContent = 'Status: ' + (FS.event.ended ? 'ENDED — attendees see thank-you screen' : 'ACTIVE — all attendees have access');
 };
 
 window.saveEvent = async () => {
-  const name         = document.getElementById('adm-event-name').value.trim() || 'Furosion';
-  const announcement = document.getElementById('adm-announcement').value.trim();
-  const days         = parseInt(document.getElementById('adm-days').value) || 3;
-  const pin          = document.getElementById('adm-pin-input').value.trim();
-  const data         = { name, announcement, days, ended: FS.event.ended || false };
+  const name  = (el('adm-event-name').value||'').trim() || 'Furosion';
+  const ann   = (el('adm-announcement').value||'').trim();
+  const days  = parseInt(el('adm-days').value)||3;
+  const pin   = (el('adm-pin-input').value||'').trim();
+  const data  = { name, announcement:ann, days, ended: FS.event.ended||false };
   if (/^\d{4}$/.test(pin)) data.pin = pin;
-  try {
-    await setDoc(doc(db, 'furosion', 'config'), data, { merge: true });
-    toast('Saved to Firebase!', 'ok');
-  } catch (e) { toast('Error: ' + e.message, 'err'); }
+  try { await setDoc(doc(db,'furosion','config'), data, { merge:true }); toast('Saved!', 'ok'); }
+  catch(e) { fbErr(e,'saveEvent'); }
 };
 
 window.endFestival = async () => {
   if (!confirm('End the festival? Non-staff attendees will see the Thank You screen.')) return;
-  try {
-    await setDoc(doc(db, 'furosion', 'config'), { ended: true }, { merge: true });
-    toast('Festival ended', 'ok');
-  } catch (e) { toast('Error: ' + e.message, 'err'); }
+  try { await setDoc(doc(db,'furosion','config'), { ended:true }, { merge:true }); toast('Festival ended', 'ok'); }
+  catch(e) { fbErr(e,'endFestival'); }
 };
 
 window.resumeFestival = async () => {
-  try {
-    await setDoc(doc(db, 'furosion', 'config'), { ended: false }, { merge: true });
-    toast('Festival resumed!', 'ok');
-  } catch (e) { toast('Error: ' + e.message, 'err'); }
+  try { await setDoc(doc(db,'furosion','config'), { ended:false }, { merge:true }); toast('Festival resumed!', 'ok'); }
+  catch(e) { fbErr(e,'resumeFestival'); }
 };
 
 window.resetAll = async () => {
-  if (!confirm('RESET everything? All votes, devices, competitions — permanently deleted from Firestore.')) return;
+  if (!confirm('RESET everything? Permanently deleted from Firestore.')) return;
   const cols = ['competitions','pages','schedule','staff','lostFound','devices','pendingCodes'];
   try {
     for (const col of cols) {
-      await new Promise(resolve => {
-        const unsub = onSnapshot(collection(db, col), async snap => {
+      await new Promise(res => {
+        const unsub = onSnapshot(collection(db,col), async snap => {
           unsub();
-          for (const d of snap.docs) await deleteDoc(d.ref).catch(() => {});
-          resolve();
+          for (const d of snap.docs) await deleteDoc(d.ref).catch(()=>{});
+          res();
         });
       });
     }
-    await setDoc(doc(db, 'furosion', 'config'), { name: 'Furosion', announcement: '', days: 3, pin: FS.event.pin || '4242', ended: false });
-    local.session = null; local.votes = {}; saveLocal();
+    await setDoc(doc(db,'furosion','config'), { name:'Furosion', announcement:'', days:3, pin:FS.event.pin||'4242', ended:false });
+    local.session=null; local.votes={}; saveLocal();
     toast('All data reset!', 'ok');
-  } catch (e) { toast('Error: ' + e.message, 'err'); }
+  } catch(e) { fbErr(e,'resetAll'); }
 };
 
 /* DEVICES */
 const renderAdmDevices = () => {
-  const pl = document.getElementById('adm-pending-list');
-  const dl = document.getElementById('adm-device-list');
+  const pl = el('adm-pending-list');
+  const dl = el('adm-device-list');
   const pending = Object.values(FS.pendingCodes);
-  const roleBadge = { voter: 'badge-yellow', competitor: 'badge-orange', staff: 'badge-green' };
+  const roleBadge = { voter:'badge-yellow', staff:'badge-green' };
 
   if (pl) {
-    pl.innerHTML = !pending.length
-      ? '<div style="font-size:11px;font-family:var(--font-mono);color:var(--text3);padding:10px">No devices waiting</div>'
-      : pending.map(c =>
-          '<div class="list-item" style="flex-wrap:wrap;gap:10px">'
-          + '<div style="flex:1;min-width:0">'
-          + '<div style="font-family:var(--font-display);font-size:28px;font-weight:900;color:var(--yellow);letter-spacing:5px">' + esc(c.code || '------') + '</div>'
-          + '<div class="list-item-sub">' + ago(c.ts || 0) + ' &middot; ' + esc((c.deviceId || '').slice(0, 18)) + '</div></div>'
+    if (!pending.length) {
+      pl.innerHTML = '<div style="font-size:11px;font-family:var(--font-mono);color:var(--text3);padding:10px">No devices waiting</div>';
+    } else {
+      pl.innerHTML = '';
+      pending.forEach(c => {
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        item.style.flexWrap = 'wrap';
+        item.style.gap = '10px';
+        item.innerHTML = '<div style="flex:1;min-width:0">'
+          + '<div style="font-family:var(--font-display);font-size:28px;font-weight:900;color:var(--yellow);letter-spacing:5px">' + esc(c.code||'------') + '</div>'
+          + '<div class="list-item-sub">' + ago(c.ts||0) + ' &middot; ' + esc((c.deviceId||'').slice(0,18)) + '</div></div>'
           + '<div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">'
           + '<select class="form-select" id="role-sel-' + c.id + '" style="font-size:11px;padding:6px 9px">'
-          + '<option value="voter">Voter</option><option value="competitor">Competitor</option><option value="staff">Staff</option></select>'
+          + '<option value="voter">Voter</option><option value="staff">Staff</option></select>'
           + '<div style="display:flex;gap:5px">'
-          + '<button class="btn btn-yellow btn-sm" style="flex:1" onclick="approveCode(' + JSON.stringify(c.id) + ',' + JSON.stringify(c.deviceId) + ')">Approve</button>'
-          + '<button class="btn-icon btn-danger" style="border:1px solid rgba(255,77,94,0.3);color:var(--red)" onclick="denyCode(' + JSON.stringify(c.id) + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>'
-          + '</div></div></div>'
-        ).join('');
+          + '<button class="btn btn-yellow btn-sm" data-action="approve-code" data-code-id="' + esc(c.id) + '" data-device-id="' + esc(c.deviceId) + '" style="flex:1">Approve &#x2713;</button>'
+          + '<button class="btn-icon" data-action="deny-code" data-code-id="' + esc(c.id) + '" style="color:var(--red);border:1px solid rgba(255,77,94,0.3)">'
+          + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M18 6L6 18M6 6l12 12"/></svg></button>'
+          + '</div></div>';
+        pl.appendChild(item);
+      });
+    }
   }
 
   if (dl) {
     const devs = Object.values(FS.devices);
-    dl.innerHTML = !devs.length
-      ? '<div style="font-size:11px;font-family:var(--font-mono);color:var(--text3);padding:10px">No verified devices yet</div>'
-      : devs.map(d =>
-          '<div class="list-item">'
-          + '<div class="list-item-main">'
-          + '<div class="list-item-sub">' + esc((d.id || '').slice(0, 22)) + '...</div>'
-          + '<span class="badge ' + (roleBadge[d.role] || 'badge-dim') + '">' + esc(d.role || 'unknown') + '</span>'
-          + '<div class="list-item-sub" style="margin-top:3px">' + (d.ts ? ago(d.ts) : '') + '</div></div>'
-          + '<button class="btn-icon" style="color:var(--red);border-color:rgba(255,77,94,0.3)" onclick="revokeDevice(' + JSON.stringify(d.id) + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>'
-          + '</div>'
-        ).join('');
+    if (!devs.length) {
+      dl.innerHTML = '<div style="font-size:11px;font-family:var(--font-mono);color:var(--text3);padding:10px">No verified devices yet</div>';
+    } else {
+      dl.innerHTML = '';
+      devs.forEach(d => {
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        item.innerHTML = '<div class="list-item-main">'
+          + '<div class="list-item-sub">' + esc((d.id||'').slice(0,22)) + '...</div>'
+          + '<span class="badge ' + (roleBadge[d.role]||'badge-dim') + '">' + esc(d.role||'unknown') + '</span>'
+          + '<div class="list-item-sub" style="margin-top:3px">' + (d.ts?ago(d.ts):'') + '</div></div>'
+          + '<button class="btn-icon" data-action="revoke-device" data-device-id="' + esc(d.id) + '" style="color:var(--red);border-color:rgba(255,77,94,0.3)">'
+          + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M18 6L6 18M6 6l12 12"/></svg></button>';
+        dl.appendChild(item);
+      });
+    }
   }
 };
 
-window.approveCode = async (codeId, deviceId) => {
-  const selEl = document.getElementById('role-sel-' + codeId);
+const approveCode = async (codeId, deviceId) => {
+  const selEl = el('role-sel-' + codeId);
   const role  = selEl ? selEl.value : 'voter';
   try {
-    await setDoc(doc(db, 'devices', deviceId), { id: deviceId, role, ts: Date.now() });
-    await deleteDoc(doc(db, 'pendingCodes', codeId));
+    await setDoc(doc(db,'devices',deviceId), { id:deviceId, role, ts:Date.now() });
+    await deleteDoc(doc(db,'pendingCodes',codeId));
     toast('Device approved as ' + role, 'ok');
-  } catch (e) { toast('Error: ' + e.message, 'err'); }
+  } catch(e) { fbErr(e,'approveCode'); }
 };
 
-window.denyCode = async codeId => {
-  try { await deleteDoc(doc(db, 'pendingCodes', codeId)); toast('Code denied', 'ok'); }
-  catch (e) { toast('Error', 'err'); }
+const denyCode = async codeId => {
+  try { await deleteDoc(doc(db,'pendingCodes',codeId)); toast('Code denied', 'ok'); }
+  catch(e) { fbErr(e,'denyCode'); }
 };
 
-window.revokeDevice = async id => {
+const revokeDevice = async id => {
   try {
-    await deleteDoc(doc(db, 'devices', id));
-    if (id === local.deviceId) { local.session = null; saveLocal(); renderVerify(); renderHome(); }
+    await deleteDoc(doc(db,'devices',id));
+    if (id===local.deviceId) { local.session=null; saveLocal(); renderVerify(); renderHome(); }
     toast('Device revoked', 'ok');
-  } catch (e) { toast('Error', 'err'); }
+  } catch(e) { fbErr(e,'revokeDevice'); }
 };
 
 window.demoVerify = role => {
   local.session = { role, verifiedAt: Date.now() };
   saveLocal();
-  setDoc(doc(db, 'devices', local.deviceId), { id: local.deviceId, role, ts: Date.now() }).catch(() => {});
-  renderVerify(); renderHome(); renderAdmDevices(); handleFestivalState();
+  setDoc(doc(db,'devices',local.deviceId), { id:local.deviceId, role, ts:Date.now() }).catch(e=>fbErr(e,'demoVerify'));
+  renderVerify(); renderHome(); renderAdmDevices(); handleFestivalState(); checkVoteBadge();
   toast('Demo: verified as ' + role, 'ok');
 };
 
 /* COMPETITIONS */
 const renderAdmComps = () => {
   const comps = Object.values(FS.competitions);
-  const sel   = document.getElementById('adm-cand-comp');
-  if (sel) sel.innerHTML = comps.map(c => '<option value="' + c.id + '">' + esc(c.name) + '</option>').join('') || '<option value="">No competitions yet</option>';
-  const list = document.getElementById('adm-comp-list');
-  if (!list) return;
+  const sel   = el('adm-cand-comp');
+  if (sel) sel.innerHTML = comps.length
+    ? comps.map(c=>'<option value="'+esc(c.id)+'">'+esc(c.name)+'</option>').join('')
+    : '<option value="">No competitions yet</option>';
+
+  const list = el('adm-comp-list'); if (!list) return;
   if (!comps.length) { list.innerHTML = '<div style="font-size:11px;font-family:var(--font-mono);color:var(--text3);padding:10px">No competitions</div>'; return; }
-  list.innerHTML = comps.map(c => {
-    const candRows = (c.candidates || []).map(x =>
-      '<div style="display:flex;align-items:center;gap:7px;padding:6px 9px;background:var(--bg3);border-radius:var(--radius-sm)">'
-      + '<span style="flex:1;font-size:12px">' + esc(x.name) + '</span>'
-      + '<span style="font-size:10px;font-family:var(--font-mono);color:var(--text3)">' + (x.votes || 0) + ' votes</span>'
-      + '<button class="btn-icon" style="width:26px;height:26px;color:var(--red)" onclick="delCand(' + JSON.stringify(c.id) + ',' + JSON.stringify(x.id) + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M18 6L6 18M6 6l12 12"/></svg></button>'
-      + '</div>'
-    ).join('');
-    return '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px">'
-      + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'
-      + '<div><div class="list-item-title">' + esc(c.name) + '</div><div class="list-item-sub">' + esc(c.category) + ' &middot; ' + (c.candidates || []).length + ' candidates</div></div>'
-      + '<button class="btn-icon" style="color:var(--red);border-color:rgba(255,77,94,0.3)" onclick="delComp(' + JSON.stringify(c.id) + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2"/></svg></button></div>'
-      + '<div style="display:flex;flex-direction:column;gap:5px">' + candRows + '</div></div>';
-  }).join('');
+  list.innerHTML = '';
+  comps.forEach(c => {
+    const div = document.createElement('div');
+    div.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px';
+    let inner = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'
+      + '<div><div class="list-item-title">' + esc(c.name) + '</div><div class="list-item-sub">' + esc(c.category) + ' &middot; ' + (c.candidates||[]).length + ' candidates</div></div>'
+      + '<button class="btn-icon" data-action="del-comp" data-id="' + esc(c.id) + '" style="color:var(--red);border-color:rgba(255,77,94,0.3)">'
+      + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M3 6h18M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2"/></svg></button></div>'
+      + '<div style="display:flex;flex-direction:column;gap:5px">';
+    (c.candidates||[]).forEach(x => {
+      inner += '<div style="display:flex;align-items:center;gap:7px;padding:6px 9px;background:var(--bg3);border-radius:var(--radius-sm)">'
+        + '<span style="flex:1;font-size:12px">' + esc(x.name) + '</span>'
+        + '<span style="font-size:10px;font-family:var(--font-mono);color:var(--text3)">' + (x.votes||0) + ' votes</span>'
+        + '<button class="btn-icon" data-action="del-cand" data-comp-id="' + esc(c.id) + '" data-cand-id="' + esc(x.id) + '" style="width:26px;height:26px;color:var(--red)">'
+        + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>';
+    });
+    inner += '</div>';
+    div.innerHTML = inner;
+    list.appendChild(div);
+  });
 };
 
 window.addComp = async () => {
-  const name = document.getElementById('adm-comp-name').value.trim();
-  const cat  = document.getElementById('adm-comp-cat').value.trim();
-  if (!name || !cat) { toast('Fill in name and category', 'err'); return; }
+  const name = (el('adm-comp-name').value||'').trim();
+  const cat  = (el('adm-comp-cat').value||'').trim();
+  if (!name||!cat) { toast('Fill in name and category', 'err'); return; }
   try {
-    await addDoc(collection(db, 'competitions'), { name, category: cat, state: 'closed', candidates: [], createdAt: Date.now() });
-    document.getElementById('adm-comp-name').value = '';
-    document.getElementById('adm-comp-cat').value  = '';
+    await addDoc(collection(db,'competitions'), { name, category:cat, state:'closed', candidates:[], createdAt:Date.now() });
+    el('adm-comp-name').value = ''; el('adm-comp-cat').value = '';
     toast('Competition added!', 'ok');
-  } catch (e) { toast('Error: ' + e.message, 'err'); }
+  } catch(e) { fbErr(e,'addComp'); }
 };
 
-window.delComp = async id => {
-  try { await deleteDoc(doc(db, 'competitions', id)); toast('Removed', 'ok'); } catch { toast('Error', 'err'); }
+const delComp = async id => {
+  try { await deleteDoc(doc(db,'competitions',id)); toast('Removed', 'ok'); }
+  catch(e) { fbErr(e,'delComp'); }
 };
 
 window.addCand = async () => {
-  const compId = document.getElementById('adm-cand-comp').value;
-  const name   = document.getElementById('adm-cand-name').value.trim();
-  const desc   = document.getElementById('adm-cand-desc').value.trim();
-  if (!compId || !name) { toast('Select competition and enter name', 'err'); return; }
+  const compId = (el('adm-cand-comp').value||'');
+  const name   = (el('adm-cand-name').value||'').trim();
+  const desc   = (el('adm-cand-desc').value||'').trim();
+  if (!compId||!name) { toast('Select competition and enter name', 'err'); return; }
   const comp = FS.competitions[compId]; if (!comp) return;
-  const newCands = [...(comp.candidates || []), { id: uid(), name, desc, votes: 0 }];
+  const newCands = [...(comp.candidates||[]), { id:uid(), name, desc, votes:0 }];
   try {
-    await updateDoc(doc(db, 'competitions', compId), { candidates: newCands });
-    document.getElementById('adm-cand-name').value = '';
-    document.getElementById('adm-cand-desc').value = '';
+    await updateDoc(doc(db,'competitions',compId), { candidates:newCands });
+    el('adm-cand-name').value=''; el('adm-cand-desc').value='';
     toast('Candidate added!', 'ok');
-  } catch (e) { toast('Error', 'err'); }
+  } catch(e) { fbErr(e,'addCand'); }
 };
 
-window.delCand = async (compId, candId) => {
+const delCand = async (compId, candId) => {
   const comp = FS.competitions[compId]; if (!comp) return;
-  const newCands = (comp.candidates || []).filter(c => c.id !== candId);
-  try { await updateDoc(doc(db, 'competitions', compId), { candidates: newCands }); toast('Removed', 'ok'); } catch { toast('Error', 'err'); }
+  const newCands = (comp.candidates||[]).filter(c=>c.id!==candId);
+  try { await updateDoc(doc(db,'competitions',compId),{candidates:newCands}); toast('Removed','ok'); }
+  catch(e) { fbErr(e,'delCand'); }
 };
 
 /* VOTING */
 const renderAdmVoting = () => {
-  const list  = document.getElementById('adm-voting-list');
-  if (!list) return;
+  const list  = el('adm-voting-list'); if (!list) return;
   const comps = Object.values(FS.competitions);
   if (!comps.length) { list.innerHTML = '<div style="font-size:11px;font-family:var(--font-mono);color:var(--text3);padding:10px">No competitions yet</div>'; return; }
-  const stateLabel = { closed: 'Closed', open: 'Open', revealed: 'Revealed' };
-  const stateBadge = { closed: 'badge-dim', open: 'badge-green', revealed: 'badge-yellow' };
-  list.innerHTML = comps.map(c => {
-    const st    = c.state || 'closed';
-    const total = (c.candidates || []).reduce((s, x) => s + (x.votes || 0), 0);
-    return '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 14px">'
-      + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px">'
+  list.innerHTML = '';
+  const stateLabel = { closed:'Closed', open:'Open', revealed:'Revealed' };
+  const stateBadge = { closed:'badge-dim', open:'badge-green', revealed:'badge-yellow' };
+  comps.forEach(c => {
+    const st    = c.state||'closed';
+    const total = (c.candidates||[]).reduce((s,x)=>s+(x.votes||0),0);
+    const div   = document.createElement('div');
+    div.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 14px';
+    div.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px">'
       + '<div><div class="list-item-title">' + esc(c.name) + '</div><div class="list-item-sub">' + esc(c.category) + ' &middot; ' + total + ' votes</div></div>'
-      + '<span class="badge ' + stateBadge[st] + '">' + stateLabel[st] + '</span></div>'
+      + '<span class="badge ' + (stateBadge[st]||'badge-dim') + '">' + (stateLabel[st]||'Closed') + '</span></div>'
       + '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px">'
-      + '<button class="btn btn-surface btn-sm" onclick="setVotingState(' + JSON.stringify(c.id) + ',\'closed\')">Close</button>'
-      + '<button class="btn btn-yellow btn-sm" onclick="setVotingState(' + JSON.stringify(c.id) + ',\'open\')">Open</button>'
-      + '<button class="btn btn-outline btn-sm" onclick="setVotingState(' + JSON.stringify(c.id) + ',\'revealed\')">Reveal</button>'
-      + '</div></div>';
-  }).join('');
+      + '<button class="btn btn-surface btn-sm" data-action="set-voting" data-comp-id="' + esc(c.id) + '" data-state="closed">Close</button>'
+      + '<button class="btn btn-yellow btn-sm" data-action="set-voting" data-comp-id="' + esc(c.id) + '" data-state="open">Open</button>'
+      + '<button class="btn btn-outline btn-sm" data-action="set-voting" data-comp-id="' + esc(c.id) + '" data-state="revealed">Reveal</button>'
+      + '</div>';
+    list.appendChild(div);
+  });
 };
 
-window.setVotingState = async (id, state) => {
+const setVotingState = async (id, state) => {
   try {
-    await updateDoc(doc(db, 'competitions', id), { state });
+    await updateDoc(doc(db,'competitions',id), { state });
     toast('Voting ' + state + ' — all devices updated', 'ok');
-  } catch (e) { toast('Error', 'err'); }
+  } catch(e) { fbErr(e,'setVotingState'); }
 };
 
 /* PAGES */
 let editingPage = null;
 const renderAdmPages = () => {
-  const list = document.getElementById('adm-pages-list');
-  if (!list) return;
-  const pages = Object.values(FS.pages).sort((a, b) => (a.order || 0) - (b.order || 0));
+  const list  = el('adm-pages-list'); if (!list) return;
+  const pages = Object.values(FS.pages).sort((a,b)=>(a.order||0)-(b.order||0));
   if (!pages.length) { list.innerHTML = '<div style="font-size:11px;font-family:var(--font-mono);color:var(--text3);padding:10px">No pages yet</div>'; return; }
-  list.innerHTML = pages.map(p =>
-    '<div class="list-item">'
-    + '<div style="font-size:20px">' + esc(p.icon || '&#x1F4C4;') + '</div>'
-    + '<div class="list-item-main"><div class="list-item-title">' + esc(p.title) + '</div></div>'
-    + '<div class="list-item-actions">'
-    + '<button class="btn-icon" style="color:var(--yellow);border-color:rgba(232,200,64,0.3)" onclick="editPage(' + JSON.stringify(p.id) + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>'
-    + '<button class="btn-icon" style="color:var(--red);border-color:rgba(255,77,94,0.3)" onclick="delPage(' + JSON.stringify(p.id) + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2"/></svg></button>'
-    + '</div></div>'
-  ).join('');
+  list.innerHTML = '';
+  pages.forEach(p => {
+    const item = document.createElement('div');
+    item.className = 'list-item';
+    item.innerHTML = '<div style="font-size:20px">' + esc(p.icon||'&#x1F4C4;') + '</div>'
+      + '<div class="list-item-main"><div class="list-item-title">' + esc(p.title) + '</div></div>'
+      + '<div class="list-item-actions">'
+      + '<button class="btn-icon" data-action="edit-page" data-id="' + esc(p.id) + '" style="color:var(--yellow);border-color:rgba(232,200,64,0.3)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>'
+      + '<button class="btn-icon" data-action="del-page" data-id="' + esc(p.id) + '" style="color:var(--red);border-color:rgba(255,77,94,0.3)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M3 6h18M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2"/></svg></button>'
+      + '</div>';
+    list.appendChild(item);
+  });
 };
 
 window.savePage = async () => {
-  const title   = document.getElementById('adm-page-title').value.trim();
-  const icon    = document.getElementById('adm-page-icon').value.trim() || '📄';
-  const color   = document.getElementById('adm-page-color').value.trim() || '#1a1800';
-  const content = document.getElementById('adm-page-content').value;
+  const title   = (el('adm-page-title').value||'').trim();
+  const icon    = (el('adm-page-icon').value||'').trim() || '📄';
+  const color   = (el('adm-page-color').value||'').trim() || '#1a1800';
+  const content = el('adm-page-content').value || '';
   if (!title) { toast('Enter a page title', 'err'); return; }
   try {
     if (editingPage) {
-      await updateDoc(doc(db, 'pages', editingPage), { title, icon, color, content });
+      await updateDoc(doc(db,'pages',editingPage), { title, icon, color, content });
       editingPage = null;
-      const lbl = document.getElementById('page-form-label');
-      if (lbl) lbl.textContent = 'Add New Page';
+      const lbl = el('page-form-label'); if (lbl) lbl.textContent = 'Add New Page';
     } else {
-      await addDoc(collection(db, 'pages'), { title, icon, color, content, order: Date.now() });
+      await addDoc(collection(db,'pages'), { title, icon, color, content, order:Date.now() });
     }
-    window.clearPageForm();
-    toast('Page saved!', 'ok');
-  } catch (e) { toast('Error: ' + e.message, 'err'); }
+    window.clearPageForm(); toast('Page saved!', 'ok');
+  } catch(e) { fbErr(e,'savePage'); }
 };
 
-window.editPage = id => {
+const editPage = id => {
   const p = FS.pages[id]; if (!p) return;
   editingPage = id;
-  const set = (elId, v) => { const el = document.getElementById(elId); if (el) el.value = v; };
-  set('adm-page-title',   p.title   || '');
-  set('adm-page-icon',    p.icon    || '');
-  set('adm-page-color',   p.color   || '#1a1800');
-  set('adm-page-content', p.content || '');
-  const lbl = document.getElementById('page-form-label');
-  if (lbl) lbl.textContent = 'Edit Page';
-  document.getElementById('adm-page-title')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  const s = (eid, v) => { const e=el(eid); if(e) e.value=v; };
+  s('adm-page-title', p.title||''); s('adm-page-icon', p.icon||''); s('adm-page-color', p.color||'#1a1800'); s('adm-page-content', p.content||'');
+  const lbl = el('page-form-label'); if (lbl) lbl.textContent = 'Edit Page';
+  el('adm-page-title')?.scrollIntoView({ behavior:'smooth', block:'center' });
 };
 
-window.delPage = async id => {
-  try { await deleteDoc(doc(db, 'pages', id)); toast('Page deleted', 'ok'); } catch { toast('Error', 'err'); }
+const delPage = async id => {
+  try { await deleteDoc(doc(db,'pages',id)); toast('Page deleted', 'ok'); }
+  catch(e) { fbErr(e,'delPage'); }
 };
 
 window.clearPageForm = () => {
   editingPage = null;
-  ['adm-page-title','adm-page-icon','adm-page-content'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-  const colorEl = document.getElementById('adm-page-color');
-  if (colorEl) colorEl.value = '#1a1800';
-  const lbl = document.getElementById('page-form-label');
-  if (lbl) lbl.textContent = 'Add New Page';
+  ['adm-page-title','adm-page-icon','adm-page-content'].forEach(id => { const e=el(id); if(e) e.value=''; });
+  const c = el('adm-page-color'); if (c) c.value = '#1a1800';
+  const lbl = el('page-form-label'); if (lbl) lbl.textContent = 'Add New Page';
 };
 
 /* SCHEDULE */
 const renderAdmSchedule = () => {
-  const list  = document.getElementById('adm-sched-list');
-  if (!list) return;
-  const items = Object.values(FS.schedule).sort((a, b) => a.datetime - b.datetime);
+  const list  = el('adm-sched-list'); if (!list) return;
+  const items = Object.values(FS.schedule).sort((a,b)=>a.datetime-b.datetime);
   if (!items.length) { list.innerHTML = '<div style="font-size:11px;font-family:var(--font-mono);color:var(--text3);padding:10px">No items</div>'; return; }
-  list.innerHTML = items.map(s =>
-    '<div class="list-item">'
-    + '<div class="list-item-main">'
-    + '<div class="list-item-title">' + esc(s.title) + '</div>'
-    + '<div class="list-item-sub">' + new Date(s.datetime).toLocaleString([], { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) + (s.location ? ' &middot; ' + esc(s.location) : '') + '</div></div>'
-    + '<button class="btn-icon" style="color:var(--red);border-color:rgba(255,77,94,0.3)" onclick="delSched(' + JSON.stringify(s.id) + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2"/></svg></button>'
-    + '</div>'
-  ).join('');
+  list.innerHTML = '';
+  items.forEach(s => {
+    const item = document.createElement('div');
+    item.className = 'list-item';
+    item.innerHTML = '<div class="list-item-main">'
+      + '<div class="list-item-title">' + esc(s.title) + '</div>'
+      + '<div class="list-item-sub">' + new Date(s.datetime).toLocaleString([],{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) + (s.location?' &middot; '+esc(s.location):'') + '</div></div>'
+      + '<button class="btn-icon" data-action="del-sched" data-id="' + esc(s.id) + '" style="color:var(--red);border-color:rgba(255,77,94,0.3)">'
+      + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M3 6h18M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2"/></svg></button>';
+    list.appendChild(item);
+  });
 };
 
 window.addSchedItem = async () => {
-  const time  = document.getElementById('adm-sched-time').value;
-  const date  = document.getElementById('adm-sched-date').value;
-  const title = document.getElementById('adm-sched-title').value.trim();
-  const desc  = document.getElementById('adm-sched-desc').value.trim();
-  const loc   = document.getElementById('adm-sched-loc').value.trim();
-  if (!time || !date || !title) { toast('Fill in date, time and title', 'err'); return; }
-  const datetime = new Date(date + 'T' + time).getTime();
+  const time  = el('adm-sched-time').value;
+  const date  = el('adm-sched-date').value;
+  const title = (el('adm-sched-title').value||'').trim();
+  const desc  = (el('adm-sched-desc').value||'').trim();
+  const loc   = (el('adm-sched-loc').value||'').trim();
+  if (!time||!date||!title) { toast('Fill in date, time and title', 'err'); return; }
+  const datetime = new Date(date+'T'+time).getTime();
   try {
-    await addDoc(collection(db, 'schedule'), { datetime, title, desc, location: loc });
-    ['adm-sched-time','adm-sched-title','adm-sched-desc','adm-sched-loc'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    await addDoc(collection(db,'schedule'), { datetime, title, desc, location:loc });
+    ['adm-sched-time','adm-sched-title','adm-sched-desc','adm-sched-loc'].forEach(id => { const e=el(id); if(e) e.value=''; });
     toast('Added!', 'ok');
-  } catch (e) { toast('Error', 'err'); }
+  } catch(e) { fbErr(e,'addSchedItem'); }
 };
 
-window.delSched = async id => {
-  try { await deleteDoc(doc(db, 'schedule', id)); toast('Removed', 'ok'); } catch { toast('Error', 'err'); }
+const delSched = async id => {
+  try { await deleteDoc(doc(db,'schedule',id)); toast('Removed', 'ok'); }
+  catch(e) { fbErr(e,'delSched'); }
 };
 
 /* STAFF */
 const renderAdmStaff = () => {
-  const list  = document.getElementById('adm-staff-list');
-  if (!list) return;
+  const list  = el('adm-staff-list'); if (!list) return;
   const staff = Object.values(FS.staff);
   if (!staff.length) { list.innerHTML = '<div style="font-size:11px;font-family:var(--font-mono);color:var(--text3);padding:10px">No staff members</div>'; return; }
-  list.innerHTML = staff.map(s => {
-    const locPart = s.location ? ' &middot; ' + esc(s.location) : '';
-    return '<div class="list-item">'
-      + '<div style="font-size:20px">' + esc(s.avatar || '&#x1F464;') + '</div>'
-      + '<div class="list-item-main">'
-      + '<div class="list-item-title">' + esc(s.name) + '</div>'
-      + '<div class="list-item-sub">' + esc(s.role || '') + locPart + '</div></div>'
+  list.innerHTML = '';
+  staff.forEach(s => {
+    const item = document.createElement('div');
+    item.className = 'list-item';
+    item.innerHTML = '<div style="font-size:20px">' + esc(s.avatar||'&#x1F464;') + '</div>'
+      + '<div class="list-item-main"><div class="list-item-title">' + esc(s.name) + '</div>'
+      + '<div class="list-item-sub">' + esc(s.role||'') + (s.location?' &middot; '+esc(s.location):'') + '</div></div>'
       + '<div class="list-item-actions">'
-      + '<select class="form-select" style="font-size:11px;padding:5px 8px;width:88px" onchange="setStaffStatus(' + JSON.stringify(s.id) + ',this.value)">'
-      + '<option value="online"'  + (s.status === 'online'  ? ' selected' : '') + '>On shift</option>'
-      + '<option value="break"'   + (s.status === 'break'   ? ' selected' : '') + '>Break</option>'
-      + '<option value="offline"' + (s.status === 'offline' ? ' selected' : '') + '>Off duty</option>'
+      + '<select class="form-select" data-action="set-staff-status" data-id="' + esc(s.id) + '" style="font-size:11px;padding:5px 8px;width:88px">'
+      + '<option value="online"'+(s.status==='online'?' selected':'')+'>On shift</option>'
+      + '<option value="break"'+(s.status==='break'?' selected':'')+'>Break</option>'
+      + '<option value="offline"'+(s.status==='offline'?' selected':'')+'>Off duty</option>'
       + '</select>'
-      + '<button class="btn-icon" style="color:var(--red);border-color:rgba(255,77,94,0.3)" onclick="delStaff(' + JSON.stringify(s.id) + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2"/></svg></button>'
-      + '</div></div>';
-  }).join('');
+      + '<button class="btn-icon" data-action="del-staff" data-id="' + esc(s.id) + '" style="color:var(--red);border-color:rgba(255,77,94,0.3)">'
+      + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M3 6h18M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2"/></svg></button>'
+      + '</div>';
+    list.appendChild(item);
+  });
 };
 
 window.addStaff = async () => {
-  const name   = document.getElementById('adm-staff-name').value.trim();
-  const role   = document.getElementById('adm-staff-role').value.trim();
-  const loc    = document.getElementById('adm-staff-loc').value.trim();
-  const avatar = document.getElementById('adm-staff-avatar').value.trim() || '👤';
-  const color  = document.getElementById('adm-staff-color').value;
-  const status = document.getElementById('adm-staff-status').value;
+  const name   = (el('adm-staff-name').value||'').trim();
+  const role   = (el('adm-staff-role').value||'').trim();
+  const loc    = (el('adm-staff-loc').value||'').trim();
+  const avatar = (el('adm-staff-avatar').value||'').trim() || '👤';
+  const color  = el('adm-staff-color').value || '#1a1800';
+  const status = el('adm-staff-status').value || 'online';
   if (!name) { toast('Enter a name', 'err'); return; }
   try {
-    await addDoc(collection(db, 'staff'), { name, role, location: loc, avatar, color, status });
-    ['adm-staff-name','adm-staff-role','adm-staff-loc','adm-staff-avatar'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    await addDoc(collection(db,'staff'), { name, role, location:loc, avatar, color, status });
+    ['adm-staff-name','adm-staff-role','adm-staff-loc','adm-staff-avatar'].forEach(id => { const e=el(id); if(e) e.value=''; });
     toast('Staff member added!', 'ok');
-  } catch (e) { toast('Error', 'err'); }
+  } catch(e) { fbErr(e,'addStaff'); }
 };
 
-window.setStaffStatus = async (id, status) => {
-  try { await updateDoc(doc(db, 'staff', id), { status }); toast('Status updated', 'ok'); } catch { toast('Error', 'err'); }
+const setStaffStatus = async (id, status) => {
+  try { await updateDoc(doc(db,'staff',id),{status}); toast('Status updated','ok'); }
+  catch(e) { fbErr(e,'setStaffStatus'); }
 };
-window.delStaff = async id => {
-  try { await deleteDoc(doc(db, 'staff', id)); toast('Removed', 'ok'); } catch { toast('Error', 'err'); }
+
+const delStaff = async id => {
+  try { await deleteDoc(doc(db,'staff',id)); toast('Removed','ok'); }
+  catch(e) { fbErr(e,'delStaff'); }
 };
 
 /* LOST & FOUND */
 const renderAdmLF = () => {
-  const list  = document.getElementById('adm-lf-list');
-  if (!list) return;
-  const items = Object.values(FS.lostFound).sort((a, b) => b.ts - a.ts);
+  const list  = el('adm-lf-list'); if (!list) return;
+  const items = Object.values(FS.lostFound).sort((a,b)=>b.ts-a.ts);
   if (!items.length) { list.innerHTML = '<div style="font-size:11px;font-family:var(--font-mono);color:var(--text3);padding:10px">No items</div>'; return; }
-  list.innerHTML = items.map(item =>
-    '<div class="list-item">'
-    + '<div style="font-size:20px">' + esc(item.emoji || '&#x2753;') + '</div>'
-    + '<div class="list-item-main">'
-    + '<div class="list-item-title">' + esc(item.title) + '</div>'
-    + '<div class="list-item-sub">' + ago(item.ts) + '</div></div>'
-    + '<div class="list-item-actions">'
-    + '<button class="btn btn-sm ' + (item.claimed ? 'btn-surface' : 'btn-yellow') + '" onclick="toggleClaim(' + JSON.stringify(item.id) + ')" style="font-size:11px;padding:6px 10px;width:auto">' + (item.claimed ? 'Unclaim' : 'Claimed &#x2713;') + '</button>'
-    + '<button class="btn-icon" style="color:var(--red);border-color:rgba(255,77,94,0.3)" onclick="delLF(' + JSON.stringify(item.id) + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2"/></svg></button>'
-    + '</div></div>'
-  ).join('');
+  list.innerHTML = '';
+  items.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'list-item';
+    div.innerHTML = '<div style="font-size:20px">' + esc(item.emoji||'&#x2753;') + '</div>'
+      + '<div class="list-item-main"><div class="list-item-title">' + esc(item.title) + '</div>'
+      + '<div class="list-item-sub">' + ago(item.ts) + '</div></div>'
+      + '<div class="list-item-actions">'
+      + '<button class="btn btn-sm '+(item.claimed?'btn-surface':'btn-yellow')+'" data-action="toggle-claim" data-id="'+esc(item.id)+'" style="font-size:11px;padding:6px 10px;width:auto">'+(item.claimed?'Unclaim':'Claimed &#x2713;')+'</button>'
+      + '<button class="btn-icon" data-action="del-lf" data-id="'+esc(item.id)+'" style="color:var(--red);border-color:rgba(255,77,94,0.3)">'
+      + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M3 6h18M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2"/></svg></button>'
+      + '</div>';
+    list.appendChild(div);
+  });
 };
 
 window.addLFItem = async () => {
-  const emoji = document.getElementById('adm-lf-emoji').value.trim() || '❓';
-  const title = document.getElementById('adm-lf-title').value.trim();
-  const desc  = document.getElementById('adm-lf-desc').value.trim();
+  const emoji = (el('adm-lf-emoji').value||'').trim() || '❓';
+  const title = (el('adm-lf-title').value||'').trim();
+  const desc  = (el('adm-lf-desc').value||'').trim();
   if (!title) { toast('Enter item name', 'err'); return; }
   try {
-    await addDoc(collection(db, 'lostFound'), { emoji, title, desc, ts: Date.now(), claimed: false });
-    ['adm-lf-emoji','adm-lf-title','adm-lf-desc'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    await addDoc(collection(db,'lostFound'), { emoji, title, desc, ts:Date.now(), claimed:false });
+    ['adm-lf-emoji','adm-lf-title','adm-lf-desc'].forEach(id => { const e=el(id); if(e) e.value=''; });
     toast('Item reported!', 'ok');
-  } catch (e) { toast('Error', 'err'); }
+  } catch(e) { fbErr(e,'addLFItem'); }
 };
 
-window.toggleClaim = async id => {
+const toggleClaim = async id => {
   const item = FS.lostFound[id]; if (!item) return;
-  try { await updateDoc(doc(db, 'lostFound', id), { claimed: !item.claimed }); toast(item.claimed ? 'Unclaimed' : 'Marked as claimed', 'ok'); }
-  catch { toast('Error', 'err'); }
-};
-window.delLF = async id => {
-  try { await deleteDoc(doc(db, 'lostFound', id)); toast('Removed', 'ok'); } catch { toast('Error', 'err'); }
+  try { await updateDoc(doc(db,'lostFound',id),{claimed:!item.claimed}); toast(item.claimed?'Unclaimed':'Marked as claimed','ok'); }
+  catch(e) { fbErr(e,'toggleClaim'); }
 };
 
-/* ── Notifications ───────────────────────────── */
+const delLF = async id => {
+  try { await deleteDoc(doc(db,'lostFound',id)); toast('Removed','ok'); }
+  catch(e) { fbErr(e,'delLF'); }
+};
+
+/* ═══════════════════════════════════════════════
+   GLOBAL EVENT DELEGATION
+   All data-action clicks handled here — no inline
+   onclick strings that could break from escaping
+   ═══════════════════════════════════════════════ */
+document.addEventListener('click', async e => {
+  const target = e.target.closest('[data-action]');
+  if (!target) return;
+  const action = target.dataset.action;
+  const { id, compId, candId, codeId, deviceId, state } = target.dataset;
+
+  switch (action) {
+    case 'vote':            await castVote(target.dataset.compId, target.dataset.category, target.dataset.candId); break;
+    case 'vote-from-detail': await castVote(target.dataset.compId, target.dataset.category, target.dataset.candId); window.backToCompetitorList(); break;
+    case 'open-page':       window.openInfoPage(id); break;
+    case 'show-competitor': window.showCompetitor(target.dataset.compId, target.dataset.candId); break;
+    case 'approve-code':    await approveCode(target.dataset.codeId, target.dataset.deviceId); break;
+    case 'deny-code':       await denyCode(target.dataset.codeId); break;
+    case 'revoke-device':   await revokeDevice(target.dataset.deviceId); break;
+    case 'del-comp':        await delComp(id); break;
+    case 'del-cand':        await delCand(target.dataset.compId, target.dataset.candId); break;
+    case 'set-voting':      await setVotingState(target.dataset.compId, target.dataset.state); break;
+    case 'edit-page':       editPage(id); break;
+    case 'del-page':        await delPage(id); break;
+    case 'del-sched':       await delSched(id); break;
+    case 'del-staff':       await delStaff(id); break;
+    case 'toggle-claim':    await toggleClaim(id); break;
+    case 'del-lf':          await delLF(id); break;
+  }
+});
+
+/* Staff status select uses 'change' not 'click' */
+document.addEventListener('change', async e => {
+  const target = e.target.closest('[data-action="set-staff-status"]');
+  if (!target) return;
+  await setStaffStatus(target.dataset.id, target.value);
+});
+
+/* ═══════════════════════════════════════════════
+   NOTIFICATIONS
+   ═══════════════════════════════════════════════ */
 let messaging = null;
 const initMessaging = async () => {
   try {
     messaging = getMessaging(FB);
     onMessage(messaging, payload => {
       const n = payload.notification || {};
-      toast((n.title || 'Furosion') + ': ' + (n.body || ''), 'info');
+      toast((n.title||'Furosion') + ': ' + (n.body||''), 'info');
     });
-  } catch (e) { /* messaging not available */ }
+  } catch {}
 };
 
 window.requestNotifs = async () => {
   if (!('Notification' in window)) { toast('Notifications not supported', 'err'); return; }
   const perm = await Notification.requestPermission();
-  document.getElementById('notif-banner-zone').style.display = 'none';
+  el('notif-banner-zone').style.display = 'none';
   if (perm !== 'granted') { toast('Notifications blocked', 'err'); return; }
   toast('Notifications enabled!', 'ok');
   if (messaging) {
     try {
       const token = await getToken(messaging, { vapidKey: VAPID });
-      if (token) await setDoc(doc(db, 'pushTokens', local.deviceId), { token, deviceId: local.deviceId, ts: Date.now() }, { merge: true });
-    } catch { /* sw may not be ready */ }
+      if (token) await setDoc(doc(db,'pushTokens',local.deviceId), { token, deviceId:local.deviceId, ts:Date.now() }, {merge:true});
+    } catch {}
   }
 };
 
 window.sendTestNotif = async () => {
-  const title = document.getElementById('notif-title').value || 'Furosion';
-  const body  = document.getElementById('notif-body').value  || 'Test notification';
+  const title = el('notif-title').value || 'Furosion';
+  const body  = el('notif-body').value  || 'Test notification';
   if (Notification.permission !== 'granted') await window.requestNotifs();
   if (Notification.permission !== 'granted') return;
   const reg = await navigator.serviceWorker.ready;
-  reg.showNotification(title, { body, icon: '/icon-192.png', tag: 'furosion-test' });
+  reg.showNotification(title, { body, icon:'/icon-192.png', tag:'furosion-test' });
   toast('Notification sent!', 'ok');
 };
 
 const checkNotifBanner = () => {
-  const z = document.getElementById('notif-banner-zone');
+  const z = el('notif-banner-zone');
   if (z && 'Notification' in window && Notification.permission === 'default') z.style.display = 'block';
 };
 
-/* ── Admin panel ─────────────────────────────── */
-window.openAdmin = () => { loadAdminEvent(); document.getElementById('admin-overlay').classList.add('open'); };
-window.closeAdmin = () => document.getElementById('admin-overlay').classList.remove('open');
-window.adminTab = (el, name) => {
-  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('adm-' + name).classList.add('active');
+/* ═══════════════════════════════════════════════
+   ADMIN PANEL
+   ═══════════════════════════════════════════════ */
+window.openAdmin = () => { loadAdminEvent(); el('admin-overlay').classList.add('open'); };
+window.closeAdmin = () => el('admin-overlay').classList.remove('open');
+window.adminTab = (tabEl, name) => {
+  document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.admin-panel').forEach(p=>p.classList.remove('active'));
+  tabEl.classList.add('active');
+  el('adm-'+name).classList.add('active');
 };
 
-/* ── PIN ─────────────────────────────────────── */
+/* ── PIN ── */
 let pinBuf = '';
-window.openPinScreen = () => { pinBuf = ''; updatePinDots(false); document.getElementById('pin-overlay').classList.add('open'); };
-window.pinCancel = () => { document.getElementById('pin-overlay').classList.remove('open'); pinBuf = ''; };
+window.openPinScreen = () => { pinBuf=''; updatePinDots(false); el('pin-overlay').classList.add('open'); };
+window.pinCancel = () => { el('pin-overlay').classList.remove('open'); pinBuf=''; };
 window.pinKey = d => {
-  if (pinBuf.length >= 4) return;
-  pinBuf += d; updatePinDots(false);
-  if (pinBuf.length === 4) {
+  if (pinBuf.length>=4) return;
+  pinBuf+=d; updatePinDots(false);
+  if (pinBuf.length===4) {
     setTimeout(() => {
-      if (pinBuf === (FS.event.pin || '4242')) {
-        document.getElementById('pin-overlay').classList.remove('open');
-        window.openAdmin();
-      } else {
-        updatePinDots(true);
-        setTimeout(() => { pinBuf = ''; updatePinDots(false); }, 700);
-      }
+      if (pinBuf===(FS.event.pin||'4242')) { el('pin-overlay').classList.remove('open'); window.openAdmin(); }
+      else { updatePinDots(true); setTimeout(()=>{ pinBuf=''; updatePinDots(false); }, 700); }
     }, 80);
   }
 };
-window.pinDel = () => { pinBuf = pinBuf.slice(0, -1); updatePinDots(false); };
+window.pinDel = () => { pinBuf=pinBuf.slice(0,-1); updatePinDots(false); };
 const updatePinDots = err => {
-  for (let i = 0; i < 4; i++) {
-    const d = document.getElementById('pd' + i);
-    if (!d) continue;
-    d.classList.toggle('on',  !err && i < pinBuf.length);
-    d.classList.toggle('err', !!err);
+  for (let i=0;i<4;i++) {
+    const d=el('pd'+i); if(!d) continue;
+    d.classList.toggle('on',!err&&i<pinBuf.length);
+    d.classList.toggle('err',!!err);
   }
 };
 
-/* ── Logo 5-tap ──────────────────────────────── */
-let logoTaps = 0, logoTimer = null;
+/* ── Logo 5-tap ── */
+let logoTaps=0, logoTimer=null;
 window.logoTap = () => {
   logoTaps++;
   clearTimeout(logoTimer);
-  logoTimer = setTimeout(() => { logoTaps = 0; }, 1500);
-  if (logoTaps >= 5) { logoTaps = 0; window.openPinScreen(); }
+  logoTimer = setTimeout(()=>logoTaps=0, 1500);
+  if (logoTaps>=5) { logoTaps=0; window.openPinScreen(); }
 };
 
-/* ── 4-finger hold + Ctrl+Shift+A ───────────── */
+/* ── Gesture ── */
 (() => {
-  let holdT = null;
-  document.addEventListener('touchstart', e => { if (e.touches.length >= 4) holdT = setTimeout(window.openPinScreen, 1800); }, { passive: true });
-  document.addEventListener('touchend',   () => clearTimeout(holdT), { passive: true });
-  document.addEventListener('touchmove',  () => clearTimeout(holdT), { passive: true });
-  document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'A') window.openPinScreen(); });
+  let holdT=null;
+  document.addEventListener('touchstart', e=>{ if(e.touches.length>=4) holdT=setTimeout(window.openPinScreen,1800); },{passive:true});
+  document.addEventListener('touchend',   ()=>clearTimeout(holdT),{passive:true});
+  document.addEventListener('touchmove',  ()=>clearTimeout(holdT),{passive:true});
+  document.addEventListener('keydown', e=>{ if((e.ctrlKey||e.metaKey)&&e.shiftKey&&e.key==='A') window.openPinScreen(); });
 })();
 
-/* ── Navigation ──────────────────────────────── */
-let moreIdx = 0;
-window.nav = (screen, el, type) => {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const sc = document.getElementById('screen-' + screen);
-  if (sc) sc.classList.add('active');
-  document.querySelectorAll('.side-btn').forEach(b => b.classList.remove('active'));
-  const sn = document.getElementById('snav-' + screen);
-  if (sn) sn.classList.add('active');
-  if (type === 'bnav') {
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    if (el) el.classList.add('active');
-  }
-  const renderers = { home: renderHome, vote: renderVote, verify: renderVerify, info: renderInfoPages, schedule: renderSchedule, staff: renderStaff, competitors: renderCompetitors, lostfound: renderLostFound };
+/* ═══════════════════════════════════════════════
+   NAVIGATION
+   ═══════════════════════════════════════════════ */
+let moreIdx=0;
+window.nav = (screen, navEl, type) => {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  el('screen-'+screen)?.classList.add('active');
+  document.querySelectorAll('.side-btn').forEach(b=>b.classList.remove('active'));
+  el('snav-'+screen)?.classList.add('active');
+  if (type==='bnav') { document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active')); navEl?.classList.add('active'); }
+  const renderers = { home:renderHome, vote:renderVote, verify:renderVerify, info:renderInfoPages, schedule:renderSchedule, staff:renderStaff, competitors:renderCompetitors, lostfound:renderLostFound };
   if (renderers[screen]) renderers[screen]();
 };
 
 window.moreMenu = () => {
-  const screens = ['schedule','staff','competitors','lostfound'];
-  moreIdx = (moreIdx + 1) % screens.length;
+  const screens=['schedule','staff','competitors','lostfound'];
+  moreIdx=(moreIdx+1)%screens.length;
   window.nav(screens[moreIdx]);
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('bnav-more')?.classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  el('bnav-more')?.classList.add('active');
 };
 
-/* ── Toast ───────────────────────────────────── */
+/* ═══════════════════════════════════════════════
+   TOAST
+   ═══════════════════════════════════════════════ */
 let toastTimer;
-window.toast = (msg, type = '') => {
-  const t = document.getElementById('toast');
-  if (!t) return;
-  t.textContent = msg; t.className = 'show ' + type;
+window.toast = (msg, type='') => {
+  const t = el('toast'); if (!t) return;
+  t.textContent=msg; t.className='show '+type;
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { t.className = ''; }, 2800);
+  toastTimer = setTimeout(()=>t.className='', 2800);
 };
 
-/* ── Online/offline ──────────────────────────── */
-const checkOnline = () => document.getElementById('offline-screen')?.classList.toggle('show', !navigator.onLine);
-window.addEventListener('online',  checkOnline);
+/* ═══════════════════════════════════════════════
+   ONLINE / OFFLINE
+   ═══════════════════════════════════════════════ */
+const checkOnline = () => el('offline-screen')?.classList.toggle('show',!navigator.onLine);
+window.addEventListener('online', checkOnline);
 window.addEventListener('offline', checkOnline);
 
-/* ── Service worker ──────────────────────────── */
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+/* ═══════════════════════════════════════════════
+   SERVICE WORKER
+   ═══════════════════════════════════════════════ */
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 
-/* ── Init ────────────────────────────────────── */
+/* ═══════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════ */
 const init = async () => {
   checkOnline();
   setSyncStatus('connecting');
   await initMessaging();
   startListeners();
   checkNotifBanner();
-  // Hide loading screen after Firestore first snapshot (max 2.5s)
-  setTimeout(() => {
-    const l = document.getElementById('loading');
-    if (l) { l.classList.add('hide'); setTimeout(() => { l.style.display = 'none'; }, 400); }
-    renderVerify();
-    renderHome();
+  checkInstallButton();
+  setTimeout(()=>{
+    const loading = el('loading');
+    if (loading) { loading.classList.add('hide'); setTimeout(()=>loading.style.display='none', 400); }
+    renderVerify(); renderHome();
   }, 1500);
 };
 
