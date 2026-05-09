@@ -1,14 +1,32 @@
 {
-  "name": "Furosion",
+  "name": "Furosion Events",
   "short_name": "Furosion",
-  "description": "Furosion Outings — under-18 furry & therian events",
-  "start_url": "/",
+  "description": "This app is used for information and to vote in competitions on Furosion organised events.",
+  "start_url": "/index.html",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0f0e0a",
   "theme_color": "#e8c840",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "id": "org.furosion.pwa",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": [
+    "entertainment",
+    "productivity",
+    "utilities"
   ]
 }
